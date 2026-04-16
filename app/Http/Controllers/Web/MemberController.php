@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
-use App\Support\Members\MemberData;
-use App\Support\Members\MemberListing;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Support\Members\MemberData;
+use App\Http\Controllers\Controller;
+use App\Support\Members\MemberListing;
 
 class MemberController extends Controller
 {

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
-use App\Support\Dashboard\DashboardMetrics;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Controllers\Controller;
+use App\Support\Dashboard\DashboardMetrics;
 
 class DashboardController extends Controller
 {
