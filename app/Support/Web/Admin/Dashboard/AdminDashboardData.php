@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Dashboard;
+namespace App\Support\Web\Admin\Dashboard;
 
 class AdminDashboardData
 {

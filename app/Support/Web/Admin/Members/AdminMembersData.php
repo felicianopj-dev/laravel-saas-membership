@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support\Members;
+namespace App\Support\Web\Admin\Members;
 
 class AdminMembersData
 {

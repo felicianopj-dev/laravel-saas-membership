@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Support\Members;
+namespace App\Support\Web\Admin\Members;
 
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class MemberListing
+class AdminMemberListing
 {
     public function paginate(int $perPage = 10): LengthAwarePaginator
     {

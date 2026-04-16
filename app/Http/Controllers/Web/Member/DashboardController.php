@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Web;
+namespace App\Http\Controllers\Web\Member;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Support\Members\MemberDashboardData;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Support\Web\Member\MemberDashboardData;
 
 class DashboardController extends Controller
 {

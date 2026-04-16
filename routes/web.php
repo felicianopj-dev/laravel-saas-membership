@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\ProfileController;
-use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\Member\ProfileController;
+use App\Http\Controllers\Web\Member\DashboardController;
 
 Route::prefix('member')
     ->name('member.')

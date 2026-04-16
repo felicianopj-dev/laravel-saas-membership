@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Support\Members;
+namespace App\Support\Web\Member;
 
 use App\Models\User;
 
-class MemberProfileData
+class MemberDashboardData
 {
     public static function make(?User $user): array
     {
