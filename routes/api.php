@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\MemberController;
-use App\Http\Controllers\Api\DashboardStatsController;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/dashboard/stats', DashboardStatsController::class);
-Route::get('/members', MemberController::class)->name('api.members.index');
+// API routes will be added here when needed
