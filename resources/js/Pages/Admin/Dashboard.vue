@@ -1,5 +1,4 @@
 <script setup>
-import { computed } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 
@@ -7,72 +6,39 @@ defineOptions({
   layout: AdminLayout,
 })
 
-const stats = [
-  {
-    label: 'Total members',
-    value: '1,284',
-    change: '+12.4%',
-    description: 'Compared to last month',
+defineProps({
+  title: {
+    type: String,
+    required: true,
   },
-  {
-    label: 'Active subscriptions',
-    value: '932',
-    change: '+8.1%',
-    description: 'Recurring paid members',
+  description: {
+    type: String,
+    required: true,
   },
-  {
-    label: 'Monthly revenue',
-    value: '$18,420',
-    change: '+14.9%',
-    description: 'Estimated MRR',
+  stats: {
+    type: Array,
+    required: true,
   },
-  {
-    label: 'Churn rate',
-    value: '2.3%',
-    change: '-0.6%',
-    description: 'Lower is better',
+  recentMembers: {
+    type: Array,
+    required: true,
   },
-]
-
-const recentMembers = [
-  {
-    name: 'Olivia Carter',
-    email: 'olivia@example.com',
-    plan: 'Pro Monthly',
-    status: 'Active',
-    joinedAt: '2026-04-15',
+  growthSummary: {
+    type: Array,
+    required: true,
   },
-  {
-    name: 'Noah Bennett',
-    email: 'noah@example.com',
-    plan: 'Starter',
-    status: 'Trial',
-    joinedAt: '2026-04-14',
+  nextStep: {
+    type: Object,
+    required: true,
   },
-  {
-    name: 'Emma Brooks',
-    email: 'emma@example.com',
-    plan: 'Pro Yearly',
-    status: 'Active',
-    joinedAt: '2026-04-13',
-  },
-  {
-    name: 'Liam Parker',
-    email: 'liam@example.com',
-    plan: 'Starter',
-    status: 'Canceled',
-    joinedAt: '2026-04-10',
-  },
-]
-
-const pageTitle = computed(() => 'Dashboard')
-const pageDescription = computed(() => 'Overview of your SaaS performance, membership activity, and business health.')
+})
 </script>
 
 <template>
-  <Head :title="pageTitle" />
+  <Head :title="title" />
 
   <div class="space-y-6">
+    <!-- Stats -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
       <div
           v-for="stat in stats"
@@ -102,19 +68,16 @@ const pageDescription = computed(() => 'Overview of your SaaS performance, membe
     </div>
 
     <div class="grid grid-cols-1 gap-6 2xl:grid-cols-[1.4fr_0.8fr]">
+      <!-- Recent Members -->
       <section class="rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-200/60">
         <div class="border-b border-slate-200 px-6 py-5">
-          <div class="flex items-center justify-between gap-4">
-            <div>
-              <h2 class="text-lg font-semibold text-slate-950">
-                Recent members
-              </h2>
+          <h2 class="text-lg font-semibold text-slate-950">
+            Recent members
+          </h2>
 
-              <p class="mt-1 text-sm text-slate-500">
-                Latest registrations and subscription activity.
-              </p>
-            </div>
-          </div>
+          <p class="mt-1 text-sm text-slate-500">
+            Latest registrations and subscription activity.
+          </p>
         </div>
 
         <div class="overflow-x-auto">
@@ -180,7 +143,9 @@ const pageDescription = computed(() => 'Overview of your SaaS performance, membe
         </div>
       </section>
 
+      <!-- Right column -->
       <section class="space-y-6">
+        <!-- Growth summary -->
         <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
           <h2 class="text-lg font-semibold text-slate-950">
             Growth summary
@@ -191,56 +156,51 @@ const pageDescription = computed(() => 'Overview of your SaaS performance, membe
           </p>
 
           <div class="mt-6 space-y-5">
-            <div>
+            <div
+                v-for="item in growthSummary"
+                :key="item.label"
+            >
               <div class="mb-2 flex items-center justify-between text-sm">
-                <span class="font-medium text-slate-700">New members</span>
-                <span class="text-slate-500">74%</span>
+                                <span class="font-medium text-slate-700">
+                                    {{ item.label }}
+                                </span>
+
+                <span class="text-slate-500">
+                                    {{ item.value }}%
+                                </span>
               </div>
 
               <div class="h-3 rounded-full bg-slate-100">
-                <div class="h-3 w-[74%] rounded-full bg-slate-900" />
-              </div>
-            </div>
-
-            <div>
-              <div class="mb-2 flex items-center justify-between text-sm">
-                <span class="font-medium text-slate-700">Retention</span>
-                <span class="text-slate-500">88%</span>
-              </div>
-
-              <div class="h-3 rounded-full bg-slate-100">
-                <div class="h-3 w-[88%] rounded-full bg-indigo-600" />
-              </div>
-            </div>
-
-            <div>
-              <div class="mb-2 flex items-center justify-between text-sm">
-                <span class="font-medium text-slate-700">Upgrade rate</span>
-                <span class="text-slate-500">41%</span>
-              </div>
-
-              <div class="h-3 rounded-full bg-slate-100">
-                <div class="h-3 w-[41%] rounded-full bg-emerald-500" />
+                <div
+                    class="h-3 rounded-full"
+                    :class="{
+                                        'bg-slate-900': item.color === 'slate',
+                                        'bg-indigo-600': item.color === 'indigo',
+                                        'bg-emerald-500': item.color === 'emerald',
+                                    }"
+                    :style="{ width: `${item.value}%` }"
+                />
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Next step card -->
         <div class="rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-6 text-white shadow-xl shadow-slate-300/40">
           <p class="text-sm font-medium text-slate-300">
-            Next step
+            {{ nextStep.eyebrow }}
           </p>
 
           <h3 class="mt-2 text-2xl font-semibold tracking-tight">
-            Billing and subscription management
+            {{ nextStep.title }}
           </h3>
 
           <p class="mt-3 text-sm leading-6 text-slate-300">
-            This layout is ready to receive subscription pages, plan management, invoices, and member detail screens.
+            {{ nextStep.description }}
           </p>
 
           <div class="mt-6 inline-flex rounded-2xl bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-            Portfolio-ready admin foundation
+            {{ nextStep.badge }}
           </div>
         </div>
       </section>
