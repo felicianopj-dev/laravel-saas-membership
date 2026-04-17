@@ -11,4 +11,10 @@ export const adminNavigation = [
         icon: 'users',
         exact: false,
     },
+    {
+        label: 'Users',
+        href: '/admin/users',
+        icon: 'users',
+        exact: false,
+    }
 ]

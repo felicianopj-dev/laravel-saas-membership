@@ -1,0 +1,182 @@
+<script setup>
+import { computed, ref, watch } from 'vue'
+import { router, usePage } from '@inertiajs/vue3'
+import AdminLayout from '@/Layouts/AdminLayout.vue'
+
+const page = usePage()
+
+const users = computed(() => page.props.users)
+const filters = computed(() => page.props.filters ?? { search: '' })
+const flash = computed(() => page.props.flash ?? {})
+const authUser = computed(() => page.props.auth?.user ?? null)
+
+const search = ref(filters.value.search ?? '')
+
+watch(search, (value) => {
+  router.get(
+      '/admin/users',
+      { search: value },
+      {
+        preserveState: true,
+        replace: true,
+        preserveScroll: true,
+      },
+  )
+})
+
+const updateRole = (userId, role) => {
+  router.patch(
+      `/admin/users/${userId}/role`,
+      { role },
+      {
+        preserveScroll: true,
+      },
+  )
+}
+
+const isCurrentUser = (user) => {
+  return authUser.value?.id === user.id
+}
+</script>
+
+<template>
+  <AdminLayout title="Users">
+    <div class="space-y-6">
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 class="text-lg font-semibold text-slate-900">
+              User Management
+            </h2>
+
+            <p class="mt-1 text-sm text-slate-500">
+              Search users and manage admin/member roles.
+            </p>
+          </div>
+
+          <div class="w-full md:w-80">
+            <input
+                v-model="search"
+                type="text"
+                placeholder="Search by name or email"
+                class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none"
+            >
+          </div>
+        </div>
+      </div>
+
+      <div
+          v-if="flash.success"
+          class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"
+      >
+        {{ flash.success }}
+      </div>
+
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Name
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Email
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Role
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Action
+              </th>
+            </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-200 bg-white">
+            <tr v-for="user in users.data" :key="user.id">
+              <td class="px-6 py-4">
+                <div class="font-medium text-slate-900">
+                  {{ user.name }}
+                </div>
+              </td>
+
+              <td class="px-6 py-4 text-sm text-slate-600">
+                {{ user.email }}
+              </td>
+
+              <td class="px-6 py-4">
+                  <span
+                      class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                      :class="user.role === 'admin'
+                      ? 'bg-slate-900 text-white'
+                      : 'bg-slate-100 text-slate-700'"
+                  >
+                    {{ user.role }}
+                  </span>
+              </td>
+
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <select
+                      class="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none"
+                      :value="user.role"
+                      :disabled="isCurrentUser(user)"
+                      @change="updateRole(user.id, $event.target.value)"
+                  >
+                    <option value="member">
+                      Member
+                    </option>
+
+                    <option value="admin">
+                      Admin
+                    </option>
+                  </select>
+
+                  <span
+                      v-if="isCurrentUser(user)"
+                      class="text-xs text-slate-400"
+                  >
+                      Current user
+                    </span>
+                </div>
+              </td>
+            </tr>
+
+            <tr v-if="users.data.length === 0">
+              <td colspan="4" class="px-6 py-10 text-center text-sm text-slate-500">
+                No users found.
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
+        <div class="text-sm text-slate-500">
+          Showing {{ users.from ?? 0 }} to {{ users.to ?? 0 }} of {{ users.total }} users
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+              type="button"
+              class="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              :disabled="!users.prev_page_url"
+              @click="users.prev_page_url && router.visit(users.prev_page_url, { preserveScroll: true, preserveState: true })"
+          >
+            Previous
+          </button>
+
+          <button
+              type="button"
+              class="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+              :disabled="!users.next_page_url"
+              @click="users.next_page_url && router.visit(users.next_page_url, { preserveScroll: true, preserveState: true })"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </AdminLayout>
+</template>

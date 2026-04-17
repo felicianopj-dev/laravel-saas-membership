@@ -28,6 +28,9 @@ class HandleInertiaRequests extends Middleware
                     ]
                     : null,
             ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+            ],
         ];
     }
 }
