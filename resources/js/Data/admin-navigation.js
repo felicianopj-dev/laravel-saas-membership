@@ -6,12 +6,6 @@ export const adminNavigation = [
         exact: true,
     },
     {
-        label: 'Members',
-        href: '/admin/members',
-        icon: 'users',
-        exact: false,
-    },
-    {
         label: 'Users',
         href: '/admin/users',
         icon: 'users',
