@@ -1,34 +1,42 @@
 <script setup>
-import { computed } from 'vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue'
+import { Head, Link, usePage } from '@inertiajs/vue3'
 
-const props = defineProps({
+defineProps({
   title: {
     type: String,
     default: 'Member Area',
   },
-});
+})
 
-const page = usePage();
+const page = usePage()
 
-const user = computed(() => page.props.auth?.user ?? null);
+const user = computed(() => page.props.auth?.user ?? null)
 
 const navigationItems = [
   {
     label: 'Dashboard',
     href: '/member',
-    startsWith: '/member',
+    exact: true,
   },
   {
     label: 'My Profile',
     href: '/member/profile',
     startsWith: '/member/profile',
   },
-];
+]
 
 const isActiveRoute = (item) => {
-  return page.url === item.href || page.url.startsWith(item.startsWith);
-};
+  if (item.exact) {
+    return page.url === item.href
+  }
+
+  if (item.startsWith) {
+    return page.url === item.href || page.url.startsWith(item.startsWith)
+  }
+
+  return page.url === item.href
+}
 </script>
 
 <template>
@@ -53,8 +61,8 @@ const isActiveRoute = (item) => {
             :href="item.href"
             class="block rounded-lg px-4 py-3 text-sm font-medium transition"
             :class="isActiveRoute(item)
-                        ? 'bg-white text-slate-900'
-                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
+            ? 'bg-white text-slate-900'
+            : 'text-slate-300 hover:bg-slate-800 hover:text-white'"
         >
           {{ item.label }}
         </Link>
@@ -88,14 +96,40 @@ const isActiveRoute = (item) => {
             </h1>
           </div>
 
-          <div class="text-right">
-            <div class="text-sm font-semibold text-slate-900">
-              {{ user?.name ?? 'Member' }}
+          <div class="flex items-center gap-4">
+            <div class="text-right">
+              <div class="text-sm font-semibold text-slate-900">
+                {{ user?.name ?? 'Member' }}
+              </div>
+
+              <div class="text-sm text-slate-500">
+                {{ user?.email ?? 'member@example.com' }}
+              </div>
             </div>
 
-            <div class="text-sm text-slate-500">
-              {{ user?.email ?? 'member@example.com' }}
-            </div>
+            <Link
+                href="/logout"
+                method="post"
+                as="button"
+                type="button"
+                class="inline-flex items-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 shadow-sm transition hover:bg-red-50 hover:text-red-700"
+            >
+              <svg
+                  class="h-4 w-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <path d="m16 17 5-5-5-5" />
+                <path d="M21 12H9" />
+              </svg>
+
+              <span>Logout</span>
+            </Link>
           </div>
         </div>
       </header>

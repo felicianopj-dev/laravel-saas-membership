@@ -7,25 +7,24 @@ use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
-    /**
-     * The root template that's loaded on the first page visit.
-     */
     protected $rootView = 'app';
     
-    /**
-     * Define the props that are shared by default.
-     */
+    public function version(Request $request): ?string
+    {
+        return parent::version($request);
+    }
+    
     public function share(Request $request): array
     {
         return [
             ...parent::share($request),
-            
             'auth' => [
                 'user' => $request->user()
                     ? [
                         'id' => $request->user()->id,
                         'name' => $request->user()->name,
                         'email' => $request->user()->email,
+                        'role' => $request->user()->role,
                     ]
                     : null,
             ],

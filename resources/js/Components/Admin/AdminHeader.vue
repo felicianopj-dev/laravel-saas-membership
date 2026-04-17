@@ -68,8 +68,11 @@ const pageDescription = computed(() => {
         </div>
 
         <Link
-            href="/"
-            class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+            href="/logout"
+            method="post"
+            as="button"
+            type="button"
+            class="inline-flex items-center gap-2 rounded-2xl border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 shadow-sm transition hover:bg-red-50 hover:text-red-700 cursor-pointer"
         >
           <svg
               class="h-4 w-4"
@@ -80,10 +83,12 @@ const pageDescription = computed(() => {
               stroke-linecap="round"
               stroke-linejoin="round"
           >
-            <path d="m15 18-6-6 6-6" />
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <path d="m16 17 5-5-5-5" />
+            <path d="M21 12H9" />
           </svg>
 
-          <span class="hidden sm:inline">Back to site</span>
+          <span class="hidden sm:inline">Logout</span>
         </Link>
       </div>
     </div>
