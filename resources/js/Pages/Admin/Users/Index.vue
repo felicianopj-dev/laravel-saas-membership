@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { router, usePage } from '@inertiajs/vue3'
+import { Link, router, usePage } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 
 const page = usePage()
@@ -114,7 +114,6 @@ const isCurrentUser = (user) => {
                     {{ user.role }}
                   </span>
               </td>
-
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
                   <select
@@ -132,12 +131,19 @@ const isCurrentUser = (user) => {
                     </option>
                   </select>
 
+                  <Link
+                      :href="`/admin/users/${user.id}/edit`"
+                      class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                  >
+                    Edit
+                  </Link>
+
                   <span
                       v-if="isCurrentUser(user)"
                       class="text-xs text-slate-400"
                   >
-                      Current user
-                    </span>
+                    Current user
+                  </span>
                 </div>
               </td>
             </tr>
