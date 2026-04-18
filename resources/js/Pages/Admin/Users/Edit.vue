@@ -9,19 +9,33 @@ const userRecord = computed(() => page.props.userRecord)
 const flash = computed(() => page.props.flash ?? {})
 const authUser = computed(() => page.props.auth?.user ?? null)
 
-const form = useForm({
+const profileForm = useForm({
   name: userRecord.value.name,
   email: userRecord.value.email,
   role: userRecord.value.role,
+})
+
+const passwordForm = useForm({
+  password: '',
+  password_confirmation: '',
 })
 
 const isCurrentUser = computed(() => {
   return authUser.value?.id === userRecord.value.id
 })
 
-const submit = () => {
-  form.put(`/admin/users/${userRecord.value.id}`, {
+const submitProfile = () => {
+  profileForm.put(`/admin/users/${userRecord.value.id}`, {
     preserveScroll: true,
+  })
+}
+
+const submitPassword = () => {
+  passwordForm.put(`/admin/users/${userRecord.value.id}/password`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      passwordForm.reset()
+    },
   })
 }
 </script>
@@ -38,7 +52,7 @@ const submit = () => {
           </h1>
 
           <p class="mt-1 text-sm text-slate-500">
-            Update account information and role.
+            Update account information, role, and password.
           </p>
         </div>
 
@@ -58,7 +72,17 @@ const submit = () => {
       </div>
 
       <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <form class="space-y-6" @submit.prevent="submit">
+        <div class="mb-6">
+          <h2 class="text-lg font-semibold text-slate-900">
+            Account Information
+          </h2>
+
+          <p class="mt-1 text-sm text-slate-500">
+            Update the user's name, email, and role.
+          </p>
+        </div>
+
+        <form class="space-y-6" @submit.prevent="submitProfile">
           <div class="grid gap-6 md:grid-cols-2">
             <div class="md:col-span-2">
               <label class="mb-2 block text-sm font-medium text-slate-700">
@@ -66,13 +90,13 @@ const submit = () => {
               </label>
 
               <input
-                  v-model="form.name"
+                  v-model="profileForm.name"
                   type="text"
                   class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none"
               >
 
-              <p v-if="form.errors.name" class="mt-2 text-sm text-red-600">
-                {{ form.errors.name }}
+              <p v-if="profileForm.errors.name" class="mt-2 text-sm text-red-600">
+                {{ profileForm.errors.name }}
               </p>
             </div>
 
@@ -82,13 +106,13 @@ const submit = () => {
               </label>
 
               <input
-                  v-model="form.email"
+                  v-model="profileForm.email"
                   type="email"
                   class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none"
               >
 
-              <p v-if="form.errors.email" class="mt-2 text-sm text-red-600">
-                {{ form.errors.email }}
+              <p v-if="profileForm.errors.email" class="mt-2 text-sm text-red-600">
+                {{ profileForm.errors.email }}
               </p>
             </div>
 
@@ -98,7 +122,7 @@ const submit = () => {
               </label>
 
               <select
-                  v-model="form.role"
+                  v-model="profileForm.role"
                   class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none"
                   :disabled="isCurrentUser"
               >
@@ -111,8 +135,8 @@ const submit = () => {
                 </option>
               </select>
 
-              <p v-if="form.errors.role" class="mt-2 text-sm text-red-600">
-                {{ form.errors.role }}
+              <p v-if="profileForm.errors.role" class="mt-2 text-sm text-red-600">
+                {{ profileForm.errors.role }}
               </p>
 
               <p v-if="isCurrentUser" class="mt-2 text-xs text-slate-400">
@@ -131,10 +155,64 @@ const submit = () => {
 
             <button
                 type="submit"
-                :disabled="form.processing"
+                :disabled="profileForm.processing"
                 class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Save changes
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="mb-6">
+          <h2 class="text-lg font-semibold text-slate-900">
+            Reset Password
+          </h2>
+
+          <p class="mt-1 text-sm text-slate-500">
+            Set a new password manually for this user.
+          </p>
+        </div>
+
+        <form class="space-y-6" @submit.prevent="submitPassword">
+          <div class="grid gap-6 md:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-700">
+                New password
+              </label>
+
+              <input
+                  v-model="passwordForm.password"
+                  type="password"
+                  class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none"
+              >
+
+              <p v-if="passwordForm.errors.password" class="mt-2 text-sm text-red-600">
+                {{ passwordForm.errors.password }}
+              </p>
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-700">
+                Confirm new password
+              </label>
+
+              <input
+                  v-model="passwordForm.password_confirmation"
+                  type="password"
+                  class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none"
+              >
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end border-t border-slate-200 pt-6">
+            <button
+                type="submit"
+                :disabled="passwordForm.processing"
+                class="inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Update password
             </button>
           </div>
         </form>

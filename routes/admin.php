@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\UserPasswordController;
 
 Route::middleware(['web', 'auth', 'admin'])
     ->prefix('admin')
@@ -13,4 +14,6 @@ Route::middleware(['web', 'auth', 'admin'])
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        
+        Route::put('/users/{user}/password', [UserPasswordController::class, 'update'])->name('users.password.update');
     });
