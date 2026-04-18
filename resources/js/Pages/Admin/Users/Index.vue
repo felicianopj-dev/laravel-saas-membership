@@ -23,20 +23,6 @@ watch(search, (value) => {
       },
   )
 })
-
-const updateRole = (userId, role) => {
-  router.patch(
-      `/admin/users/${userId}/role`,
-      { role },
-      {
-        preserveScroll: true,
-      },
-  )
-}
-
-const isCurrentUser = (user) => {
-  return authUser.value?.id === user.id
-}
 </script>
 
 <template>
@@ -50,7 +36,7 @@ const isCurrentUser = (user) => {
             </h2>
 
             <p class="mt-1 text-sm text-slate-500">
-              Search users and manage admin/member roles.
+              Search users and manage account access.
             </p>
           </div>
 
@@ -114,23 +100,9 @@ const isCurrentUser = (user) => {
                     {{ user.role }}
                   </span>
               </td>
+
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <select
-                      class="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none"
-                      :value="user.role"
-                      :disabled="isCurrentUser(user)"
-                      @change="updateRole(user.id, $event.target.value)"
-                  >
-                    <option value="member">
-                      Member
-                    </option>
-
-                    <option value="admin">
-                      Admin
-                    </option>
-                  </select>
-
                   <Link
                       :href="`/admin/users/${user.id}/edit`"
                       class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
@@ -139,11 +111,11 @@ const isCurrentUser = (user) => {
                   </Link>
 
                   <span
-                      v-if="isCurrentUser(user)"
+                      v-if="authUser?.id === user.id"
                       class="text-xs text-slate-400"
                   >
-                    Current user
-                  </span>
+                      Current user
+                    </span>
                 </div>
               </td>
             </tr>
