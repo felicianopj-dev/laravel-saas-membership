@@ -73,6 +73,9 @@ watch(search, (value) => {
                 Role
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Status
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Action
               </th>
             </tr>
@@ -99,6 +102,17 @@ watch(search, (value) => {
                   >
                     {{ user.role }}
                   </span>
+              </td>
+
+              <td class="px-6 py-4">
+                <span
+                    class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                    :class="user.status === 'active'
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-amber-100 text-amber-700'"
+                >
+                  {{ user.status }}
+                </span>
               </td>
 
               <td class="px-6 py-4">

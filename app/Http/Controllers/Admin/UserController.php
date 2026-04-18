@@ -40,10 +40,17 @@ class UserController extends Controller
             ]);
         }
         
+        if ($request->user()->is($user) && $data['status'] !== 'active') {
+            return back()->withErrors([
+                'status' => 'You cannot deactivate your own account.',
+            ]);
+        }
+        
         $user->update([
             'name' => $data['name'],
             'email' => $data['email'],
             'role' => $data['role'],
+            'status' => $data['status'],
         ]);
         
         return redirect()

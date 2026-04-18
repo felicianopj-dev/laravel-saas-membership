@@ -30,6 +30,17 @@ class LoginController extends Controller
         
         $request->session()->regenerate();
         
+        if (! $request->user()?->isActive()) {
+            Auth::logout();
+            
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            return back()->withErrors([
+                'email' => 'This account is inactive. Please contact an administrator.',
+            ])->onlyInput('email');
+        }
+        
         return redirect()->intended(
             RedirectUserByRole::path($request->user())
         );

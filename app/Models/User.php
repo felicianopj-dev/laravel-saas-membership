@@ -49,4 +49,14 @@ class User extends Authenticatable
     {
         return $this->role === 'member';
     }
+    
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+    
+    public function isInactive(): bool
+    {
+        return $this->status === 'inactive';
+    }
 }

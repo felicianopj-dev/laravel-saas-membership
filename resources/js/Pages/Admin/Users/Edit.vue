@@ -13,6 +13,7 @@ const profileForm = useForm({
   name: userRecord.value.name,
   email: userRecord.value.email,
   role: userRecord.value.role,
+  status: userRecord.value.status,
 })
 
 const passwordForm = useForm({
@@ -52,7 +53,7 @@ const submitPassword = () => {
           </h1>
 
           <p class="mt-1 text-sm text-slate-500">
-            Update account information, role, and password.
+            Update account information, role, status, and password.
           </p>
         </div>
 
@@ -78,7 +79,7 @@ const submitPassword = () => {
           </h2>
 
           <p class="mt-1 text-sm text-slate-500">
-            Update the user's name, email, and role.
+            Update the user's name, email, role, and status.
           </p>
         </div>
 
@@ -141,6 +142,34 @@ const submitPassword = () => {
 
               <p v-if="isCurrentUser" class="mt-2 text-xs text-slate-400">
                 You cannot change your own role here.
+              </p>
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-700">
+                Status
+              </label>
+
+              <select
+                  v-model="profileForm.status"
+                  class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none"
+                  :disabled="isCurrentUser"
+              >
+                <option value="active">
+                  Active
+                </option>
+
+                <option value="inactive">
+                  Inactive
+                </option>
+              </select>
+
+              <p v-if="profileForm.errors.status" class="mt-2 text-sm text-red-600">
+                {{ profileForm.errors.status }}
+              </p>
+
+              <p v-if="isCurrentUser" class="mt-2 text-xs text-slate-400">
+                You cannot deactivate your own account here.
               </p>
             </div>
           </div>

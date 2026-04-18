@@ -25,6 +25,7 @@ class UpdateUserRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($user?->id),
             ],
             'role' => ['required', 'string', Rule::in(['admin', 'member'])],
+            'status' => ['required', 'string', Rule::in(['active', 'inactive'])],
         ];
     }
 }

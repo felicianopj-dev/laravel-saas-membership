@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Web\Public\Auth;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use App\Support\Auth\RedirectUserByRole;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -24,6 +25,7 @@ class RegisterController extends Controller
             'email' => $request->string('email')->toString(),
             'password' => $request->string('password')->toString(),
             'role' => 'member',
+            'status' => 'active',
         ]);
         
         Auth::login($user);
