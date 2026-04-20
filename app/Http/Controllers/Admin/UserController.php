@@ -18,7 +18,8 @@ class UserController extends Controller
     {
         return Inertia::render('Admin/Users/Index', [
             ...AdminUsersData::make(
-                $request->string('search')->toString()
+                $request->string('search')->toString(),
+                $request->boolean('with_deleted'),
             ),
         ]);
     }

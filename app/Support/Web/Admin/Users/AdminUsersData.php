@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AdminUsersData
 {
-    public static function make(?string $search = null): array
+    public static function make(?string $search = null, bool $withDeleted = false): array
     {
         $users = User::query()
-            ->withTrashed()
+            ->when($withDeleted, function (Builder $query): void {
+                $query->withTrashed();
+            })
             ->when($search, function (Builder $query, string $search): void {
                 $query->where(function (Builder $subQuery) use ($search): void {
                     $subQuery
@@ -41,6 +43,7 @@ class AdminUsersData
             'description' => 'Manage user accounts and roles.',
             'filters' => [
                 'search' => $search ?? '',
+                'with_deleted' => $withDeleted,
             ],
             'users' => $users,
         ];

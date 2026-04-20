@@ -6,16 +6,20 @@ import AdminLayout from '@/Layouts/AdminLayout.vue'
 const page = usePage()
 
 const users = computed(() => page.props.users)
-const filters = computed(() => page.props.filters ?? { search: '' })
+const filters = computed(() => page.props.filters ?? { search: '', with_deleted: false })
 const flash = computed(() => page.props.flash ?? {})
 const authUser = computed(() => page.props.auth?.user ?? null)
 
 const search = ref(filters.value.search ?? '')
+const withDeleted = ref(Boolean(filters.value.with_deleted))
 
-watch(search, (value) => {
+watch([search, withDeleted], ([searchValue, withDeletedValue]) => {
   router.get(
       '/admin/users',
-      { search: value },
+      {
+        search: searchValue,
+        with_deleted: withDeletedValue ? 1 : 0,
+      },
       {
         preserveState: true,
         replace: true,
@@ -86,13 +90,22 @@ const restoreUser = (user) => {
             </p>
           </div>
 
-          <div class="w-full md:w-80">
+          <div class="flex w-full flex-col gap-3 md:w-auto md:min-w-[420px]">
             <input
                 v-model="search"
                 type="text"
                 placeholder="Search by name or email"
                 class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-slate-500 focus:outline-none"
             >
+
+            <label class="inline-flex items-center gap-2 text-sm text-slate-600">
+              <input
+                  v-model="withDeleted"
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500"
+              >
+              <span>Include deleted users</span>
+            </label>
           </div>
         </div>
       </div>
