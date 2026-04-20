@@ -27,6 +27,9 @@ class AdminUsersData
                     'email' => $user->email,
                     'role' => $user->role,
                     'status' => $user->status,
+                    'email_verified_at' => $user->email_verified_at?->toDateTimeString(),
+                    'created_at' => $user->created_at?->toDateTimeString(),
+                    'updated_at' => $user->updated_at?->toDateTimeString(),
                 ];
             });
         

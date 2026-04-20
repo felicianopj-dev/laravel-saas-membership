@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { Link, router, usePage } from '@inertiajs/vue3'
+import { Head, Link, router, usePage } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 
 const page = usePage()
@@ -23,9 +23,39 @@ watch(search, (value) => {
       },
   )
 })
+
+const formatDateTime = (value) => {
+  if (!value) {
+    return '—'
+  }
+
+  return new Date(value).toLocaleString()
+}
+
+const getVerifiedLabel = (user) => {
+  return user.email_verified_at ? 'Verified' : 'Unverified'
+}
+
+const destroyUser = (user) => {
+  if (authUser.value?.id === user.id) {
+    return
+  }
+
+  const confirmed = window.confirm(`Are you sure you want to delete ${user.name}?`)
+
+  if (!confirmed) {
+    return
+  }
+
+  router.delete(`/admin/users/${user.id}`, {
+    preserveScroll: true,
+  })
+}
 </script>
 
 <template>
+  <Head title="Users" />
+
   <AdminLayout title="Users">
     <div class="space-y-6">
       <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -58,6 +88,13 @@ watch(search, (value) => {
         {{ flash.success }}
       </div>
 
+      <div
+          v-if="flash.error"
+          class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+      >
+        {{ flash.error }}
+      </div>
+
       <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-slate-200">
@@ -74,6 +111,15 @@ watch(search, (value) => {
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Status
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Verified
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Created
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Updated
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 Action
@@ -105,14 +151,33 @@ watch(search, (value) => {
               </td>
 
               <td class="px-6 py-4">
-                <span
-                    class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-                    :class="user.status === 'active'
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : 'bg-amber-100 text-amber-700'"
-                >
-                  {{ user.status }}
-                </span>
+                  <span
+                      class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                      :class="user.status === 'active'
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-amber-100 text-amber-700'"
+                  >
+                    {{ user.status }}
+                  </span>
+              </td>
+
+              <td class="px-6 py-4">
+                  <span
+                      class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                      :class="user.email_verified_at
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'bg-slate-100 text-slate-700'"
+                  >
+                    {{ getVerifiedLabel(user) }}
+                  </span>
+              </td>
+
+              <td class="px-6 py-4 text-sm text-slate-600">
+                {{ formatDateTime(user.created_at) }}
+              </td>
+
+              <td class="px-6 py-4 text-sm text-slate-600">
+                {{ formatDateTime(user.updated_at) }}
               </td>
 
               <td class="px-6 py-4">
@@ -123,6 +188,15 @@ watch(search, (value) => {
                   >
                     Edit
                   </Link>
+
+                  <button
+                      v-if="authUser?.id !== user.id"
+                      type="button"
+                      class="inline-flex items-center rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100"
+                      @click="destroyUser(user)"
+                  >
+                    Delete
+                  </button>
 
                   <span
                       v-if="authUser?.id === user.id"
@@ -135,7 +209,7 @@ watch(search, (value) => {
             </tr>
 
             <tr v-if="users.data.length === 0">
-              <td colspan="4" class="px-6 py-10 text-center text-sm text-slate-500">
+              <td colspan="8" class="px-6 py-10 text-center text-sm text-slate-500">
                 No users found.
               </td>
             </tr>
