@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserDeleteController;
+use App\Http\Controllers\Admin\UserRestoreController;
 use App\Http\Controllers\Admin\UserPasswordController;
 
 Route::middleware(['web', 'auth', 'admin'])
@@ -19,4 +20,6 @@ Route::middleware(['web', 'auth', 'admin'])
         Route::put('/users/{user}/password', [UserPasswordController::class, 'update'])->name('users.password.update');
         
         Route::delete('/users/{user}', UserDeleteController::class)->name('users.destroy');
+        
+        Route::patch('/users/{user}/restore', UserRestoreController::class)->name('admin.users.restore');
     });

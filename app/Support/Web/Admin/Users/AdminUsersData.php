@@ -10,6 +10,7 @@ class AdminUsersData
     public static function make(?string $search = null): array
     {
         $users = User::query()
+            ->withTrashed()
             ->when($search, function (Builder $query, string $search): void {
                 $query->where(function (Builder $subQuery) use ($search): void {
                     $subQuery
@@ -27,6 +28,8 @@ class AdminUsersData
                     'email' => $user->email,
                     'role' => $user->role,
                     'status' => $user->status,
+                    'is_deleted' => $user->trashed(),
+                    'deleted_at' => $user->deleted_at?->toDateTimeString(),
                     'email_verified_at' => $user->email_verified_at?->toDateTimeString(),
                     'created_at' => $user->created_at?->toDateTimeString(),
                     'updated_at' => $user->updated_at?->toDateTimeString(),

@@ -36,6 +36,10 @@ const getVerifiedLabel = (user) => {
   return user.email_verified_at ? 'Verified' : 'Unverified'
 }
 
+const getAccountStatusLabel = (user) => {
+  return user.is_deleted ? 'Deleted' : 'Active'
+}
+
 const destroyUser = (user) => {
   if (authUser.value?.id === user.id) {
     return
@@ -48,6 +52,18 @@ const destroyUser = (user) => {
   }
 
   router.delete(`/admin/users/${user.id}`, {
+    preserveScroll: true,
+  })
+}
+
+const restoreUser = (user) => {
+  const confirmed = window.confirm(`Are you sure you want to restore ${user.name}?`)
+
+  if (!confirmed) {
+    return
+  }
+
+  router.patch(`/admin/users/${user.id}/restore`, {}, {
     preserveScroll: true,
   })
 }
@@ -128,7 +144,11 @@ const destroyUser = (user) => {
             </thead>
 
             <tbody class="divide-y divide-slate-200 bg-white">
-            <tr v-for="user in users.data" :key="user.id">
+            <tr
+                v-for="user in users.data"
+                :key="user.id"
+                :class="user.is_deleted ? 'bg-slate-50/70 opacity-70' : ''"
+            >
               <td class="px-6 py-4">
                 <div class="font-medium text-slate-900">
                   {{ user.name }}
@@ -153,11 +173,11 @@ const destroyUser = (user) => {
               <td class="px-6 py-4">
                   <span
                       class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-                      :class="user.status === 'active'
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-amber-100 text-amber-700'"
+                      :class="user.is_deleted
+                      ? 'bg-red-100 text-red-700'
+                      : 'bg-emerald-100 text-emerald-700'"
                   >
-                    {{ user.status }}
+                    {{ getAccountStatusLabel(user) }}
                   </span>
               </td>
 
@@ -183,6 +203,7 @@ const destroyUser = (user) => {
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
                   <Link
+                      v-if="!user.is_deleted"
                       :href="`/admin/users/${user.id}/edit`"
                       class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                   >
@@ -190,7 +211,7 @@ const destroyUser = (user) => {
                   </Link>
 
                   <button
-                      v-if="authUser?.id !== user.id"
+                      v-if="!user.is_deleted && authUser?.id !== user.id"
                       type="button"
                       class="inline-flex items-center rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100"
                       @click="destroyUser(user)"
@@ -198,8 +219,17 @@ const destroyUser = (user) => {
                     Delete
                   </button>
 
+                  <button
+                      v-if="user.is_deleted"
+                      type="button"
+                      class="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100"
+                      @click="restoreUser(user)"
+                  >
+                    Restore
+                  </button>
+
                   <span
-                      v-if="authUser?.id === user.id"
+                      v-if="!user.is_deleted && authUser?.id === user.id"
                       class="text-xs text-slate-400"
                   >
                       Current user
