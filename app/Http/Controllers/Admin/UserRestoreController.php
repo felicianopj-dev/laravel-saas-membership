@@ -21,7 +21,7 @@ class UserRestoreController extends Controller
         $user->restore();
         
         return redirect()
-            ->route('admin.users.index')
+            ->route('admin.users.edit', $userId)
             ->with('success', 'User restored successfully.');
     }
 }

@@ -24,13 +24,16 @@ class UserController extends Controller
         ]);
     }
     
-    public function edit(User $user): Response
+    public function edit($id): Response
     {
+        $user = User::withTrashed()->findOrFail($id);
+        
         return Inertia::render('Admin/Users/Edit', [
             ...AdminEditUserData::make($user),
         ]);
     }
     
+    // todo: also handle user soft delete
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
         $data = $request->validated();

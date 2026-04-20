@@ -26,6 +26,7 @@ class HandleInertiaRequests extends Middleware
                         'email' => $request->user()->email,
                         'role' => $request->user()->role,
                         'status' => $request->user()->status,
+                        'is_deleted' => (bool) $request->user()->deleted_at,
                     ]
                     : null,
             ],

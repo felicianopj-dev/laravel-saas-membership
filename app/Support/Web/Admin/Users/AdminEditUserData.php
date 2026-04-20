@@ -17,6 +17,7 @@ class AdminEditUserData
                 'email' => $user->email,
                 'role' => $user->role,
                 'status' => $user->status,
+                'is_deleted' => (bool) $user->deleted_at,
             ],
         ];
     }

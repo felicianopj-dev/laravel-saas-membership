@@ -1,11 +1,13 @@
 <script setup>
 import { computed } from 'vue'
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3'
+import { router, Head, Link, useForm, usePage } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 
 const page = usePage()
 
 const userRecord = computed(() => page.props.userRecord)
+console.log(userRecord.value)
+console.log(userRecord.value.is_deleted)
 const flash = computed(() => page.props.flash ?? {})
 const authUser = computed(() => page.props.auth?.user ?? null)
 
@@ -37,6 +39,34 @@ const submitPassword = () => {
     onSuccess: () => {
       passwordForm.reset()
     },
+  })
+}
+
+const destroyUser = () => {
+  if (isCurrentUser.value) {
+    return
+  }
+
+  const confirmed = window.confirm(`Are you sure you want to delete ${userRecord.value.name}?`)
+
+  if (!confirmed) {
+    return
+  }
+
+  router.delete(`/admin/users/${userRecord.value.id}`, {
+    preserveScroll: true,
+  })
+}
+
+const restoreUser = () => {
+  const confirmed = window.confirm(`Are you sure you want to restore ${userRecord.value.name}?`)
+
+  if (!confirmed) {
+    return
+  }
+
+  router.patch(`/admin/users/${userRecord.value.id}/restore`, {}, {
+    preserveScroll: true,
   })
 }
 </script>
@@ -245,6 +275,78 @@ const submitPassword = () => {
             </button>
           </div>
         </form>
+      </div>
+
+      <div class="rounded-2xl border border-red-200 bg-red-50 p-6 shadow-sm">
+        <div class="mb-6">
+          <h2 class="text-lg font-semibold text-red-700">
+            Danger Zone
+          </h2>
+
+          <p class="mt-1 text-sm text-red-600">
+            Irreversible and sensitive actions for this user account.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <!-- DELETE -->
+          <div
+              v-if="!userRecord.is_deleted"
+              class="flex items-center justify-between rounded-xl border border-red-200 bg-white p-4"
+          >
+
+            <div>
+              <p class="text-sm font-medium text-slate-900">
+                Delete user
+              </p>
+
+              <p class="text-sm text-slate-500">
+                This will soft delete the user account. It can be restored later.
+              </p>
+            </div>
+
+            <button
+                type="button"
+                class="inline-flex items-center rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100"
+                :disabled="isCurrentUser"
+                @click="destroyUser"
+            >
+              Delete
+            </button>
+          </div>
+
+          <!-- RESTORE -->
+          <div
+              v-if="userRecord.is_deleted"
+              class="flex items-center justify-between rounded-xl border border-emerald-200 bg-white p-4"
+          >
+            <div>
+              <p class="text-sm font-medium text-slate-900">
+                Restore user
+              </p>
+
+              <p class="text-sm text-slate-500">
+                This will restore the user account and allow access again.
+              </p>
+            </div>
+
+            <button
+                type="button"
+                class="inline-flex items-center rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-100"
+                @click="restoreUser"
+            >
+              Restore
+            </button>
+          </div>
+
+          <!-- SELF PROTECTION -->
+          <p
+              v-if="isCurrentUser"
+              class="text-xs text-slate-400"
+          >
+            You cannot delete your own account.
+          </p>
+        </div>
       </div>
     </div>
   </AdminLayout>
