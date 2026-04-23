@@ -83,31 +83,11 @@ defineOptions({
       <div class="mt-4 grid gap-4 md:grid-cols-3">
         <div class="rounded-xl border border-slate-200 bg-white p-4">
           <div class="text-sm font-semibold text-slate-900">
-            Profile editing
-          </div>
-
-          <p class="mt-2 text-sm text-slate-600">
-            Add a form so the member can update personal account details.
-          </p>
-        </div>
-
-        <div class="rounded-xl border border-slate-200 bg-white p-4">
-          <div class="text-sm font-semibold text-slate-900">
             Subscription details
           </div>
 
           <p class="mt-2 text-sm text-slate-600">
             Show current plan, renewal date, and billing information.
-          </p>
-        </div>
-
-        <div class="rounded-xl border border-slate-200 bg-white p-4">
-          <div class="text-sm font-semibold text-slate-900">
-            Secure access
-          </div>
-
-          <p class="mt-2 text-sm text-slate-600">
-            Protect this area with authentication and role-based authorization.
           </p>
         </div>
       </div>
