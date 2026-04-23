@@ -6,6 +6,7 @@ use App\Http\Controllers\Web\Member\ProfileController;
 use App\Http\Controllers\Web\Member\DashboardController;
 use App\Http\Controllers\Web\Public\Auth\LoginController;
 use App\Http\Controllers\Web\Public\Auth\RegisterController;
+use App\Http\Controllers\Web\Member\ProfilePasswordController;
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -28,5 +29,6 @@ Route::middleware('auth')->group(function () {
             
             Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
             Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+            Route::put('/profile/password', ProfilePasswordController::class)->name('profile.password.update');
         });
 });
