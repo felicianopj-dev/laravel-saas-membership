@@ -25,6 +25,8 @@ Route::middleware('auth')->group(function () {
         ->name('member.')
         ->group(function () {
             Route::get('/', DashboardController::class)->name('dashboard');
+            
             Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+            Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
         });
 });

@@ -20,7 +20,7 @@ const navigationItems = [
     exact: true,
   },
   {
-    label: 'My Profile',
+    label: 'Profile',
     href: '/member/profile',
     startsWith: '/member/profile',
   },

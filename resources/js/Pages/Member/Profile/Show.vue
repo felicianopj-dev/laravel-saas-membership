@@ -1,112 +1,125 @@
 <script setup>
-import MemberLayout from '@/Layouts/MemberLayout.vue';
+import { Head, useForm, usePage } from '@inertiajs/vue3'
+import MemberLayout from '@/Layouts/MemberLayout.vue'
 
-defineProps({
-  member: {
-    type: Object,
-    required: true,
-  },
-});
+const page = usePage()
 
-defineOptions({
-  layout: (h, page) => h(MemberLayout, { title: 'My Profile' }, () => page),
-});
+const profile = page.props.profile
+
+const form = useForm({
+  name: profile.name ?? '',
+  email: profile.email ?? '',
+})
 </script>
 
 <template>
-  <div class="space-y-6">
-    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <p class="text-sm font-medium text-slate-500">
-            Account overview
-          </p>
+  <Head title="My Profile" />
 
-          <h2 class="mt-1 text-2xl font-bold text-slate-900">
-            {{ member.name }}
-          </h2>
+  <MemberLayout>
+    <div class="space-y-6">
+      <div>
+        <h1 class="text-2xl font-semibold text-gray-900">My Profile</h1>
+        <p class="mt-1 text-sm text-gray-600">
+          Update your account information.
+        </p>
+      </div>
 
-          <p class="mt-2 text-sm text-slate-600">
-            This page shows the logged-in member information. Later you can turn this into an edit page.
+      <div
+          v-if="$page.props.flash?.success"
+          class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
+      >
+        {{ $page.props.flash.success }}
+      </div>
+
+      <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div class="mb-6">
+          <h2 class="text-lg font-semibold text-gray-900">Account Information</h2>
+          <p class="mt-1 text-sm text-gray-600">
+            Keep your account details up to date.
           </p>
         </div>
 
-        <span class="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-                    {{ member.membership_status }}
-                </span>
-      </div>
-    </section>
-
-    <section class="grid gap-6 md:grid-cols-2">
-      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 class="text-lg font-semibold text-slate-900">
-          Personal details
-        </h3>
-
-        <dl class="mt-6 space-y-4">
+        <form
+            class="space-y-5"
+            @submit.prevent="form.put('/member/profile')"
+        >
           <div>
-            <dt class="text-sm font-medium text-slate-500">
+            <label
+                for="name"
+                class="mb-2 block text-sm font-medium text-gray-700"
+            >
               Name
-            </dt>
-            <dd class="mt-1 text-base text-slate-900">
-              {{ member.name }}
-            </dd>
+            </label>
+
+            <input
+                id="name"
+                v-model="form.name"
+                type="text"
+                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-0"
+            >
+
+            <p
+                v-if="form.errors.name"
+                class="mt-2 text-sm text-red-600"
+            >
+              {{ form.errors.name }}
+            </p>
           </div>
 
           <div>
-            <dt class="text-sm font-medium text-slate-500">
+            <label
+                for="email"
+                class="mb-2 block text-sm font-medium text-gray-700"
+            >
               Email
-            </dt>
-            <dd class="mt-1 text-base text-slate-900">
-              {{ member.email }}
-            </dd>
+            </label>
+
+            <input
+                id="email"
+                v-model="form.email"
+                type="email"
+                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-0"
+            >
+
+            <p
+                v-if="form.errors.email"
+                class="mt-2 text-sm text-red-600"
+            >
+              {{ form.errors.email }}
+            </p>
           </div>
 
-          <div>
-            <dt class="text-sm font-medium text-slate-500">
-              Joined at
-            </dt>
-            <dd class="mt-1 text-base text-slate-900">
-              {{ member.joined_at ?? '—' }}
-            </dd>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+              <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Role
+              </p>
+              <p class="mt-1 text-sm font-medium text-gray-900">
+                {{ profile.role }}
+              </p>
+            </div>
+
+            <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+              <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Status
+              </p>
+              <p class="mt-1 text-sm font-medium text-gray-900">
+                {{ profile.status }}
+              </p>
+            </div>
           </div>
-        </dl>
+
+          <div class="flex justify-end">
+            <button
+                type="submit"
+                :disabled="form.processing"
+                class="inline-flex items-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {{ form.processing ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </form>
       </div>
-
-      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 class="text-lg font-semibold text-slate-900">
-          Membership
-        </h3>
-
-        <dl class="mt-6 space-y-4">
-          <div>
-            <dt class="text-sm font-medium text-slate-500">
-              Status
-            </dt>
-            <dd class="mt-1 text-base font-semibold text-emerald-600">
-              {{ member.membership_status }}
-            </dd>
-          </div>
-
-          <div>
-            <dt class="text-sm font-medium text-slate-500">
-              Current area
-            </dt>
-            <dd class="mt-1 text-base text-slate-900">
-              Member self-service portal
-            </dd>
-          </div>
-
-          <div>
-            <dt class="text-sm font-medium text-slate-500">
-              Next feature
-            </dt>
-            <dd class="mt-1 text-base text-slate-900">
-              Profile edit form
-            </dd>
-          </div>
-        </dl>
-      </div>
-    </section>
-  </div>
+    </div>
+  </MemberLayout>
 </template>

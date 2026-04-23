@@ -9,10 +9,11 @@ class MemberProfileData
     public static function make(?User $user): array
     {
         return [
-            'member' => [
+            'profile' => [
                 'name' => $user?->name,
                 'email' => $user?->email,
-                'membership_status' => 'Active',
+                'role' => $user?->role,
+                'status' => $user?->status,
                 'joined_at' => $user?->created_at?->toDateString(),
             ],
         ];
