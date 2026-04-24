@@ -13,7 +13,7 @@ class DashboardController extends Controller
     public function __invoke(Request $request): Response
     {
         return Inertia::render('Member/Dashboard', [
-            ...MemberDashboardData::make($request->user()),
+            ...MemberDashboardData::make(auth()->user()),
         ]);
     }
 }
