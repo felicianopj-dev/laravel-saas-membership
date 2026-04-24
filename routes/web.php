@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\Member\DashboardController;
 use App\Http\Controllers\Web\Public\Auth\LoginController;
 use App\Http\Controllers\Web\Public\Auth\RegisterController;
 use App\Http\Controllers\Web\Member\ProfilePasswordController;
+use App\Http\Controllers\Web\Member\PlanSubscriptionController;
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -32,5 +33,7 @@ Route::middleware('auth')->group(function () {
             Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
             Route::put('/profile/password', ProfilePasswordController::class)->name('profile.password.update');
             Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
+            Route::post('/plans/{plan}/subscribe', PlanSubscriptionController::class)
+                ->name('plans.subscribe');
         });
 });

@@ -12,7 +12,7 @@ class PlanController extends Controller
     public function index(): Response
     {
         return Inertia::render('Member/Plans/Index', [
-            ...MemberPlansData::make(),
+            ...MemberPlansData::make(auth()->user()),
         ]);
     }
 }
