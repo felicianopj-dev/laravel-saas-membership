@@ -16,4 +16,9 @@ export const memberNavigation: MemberNavigationItem[] = [
         href: '/member/profile',
         startsWith: '/member/profile',
     },
+    {
+        label: 'Plans',
+        href: '/member/plans',
+        startsWith: '/member/plans',
+    },
 ]

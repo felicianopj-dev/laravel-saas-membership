@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\Public\HomeController;
+use App\Http\Controllers\Web\Member\PlanController;
 use App\Http\Controllers\Web\Member\ProfileController;
 use App\Http\Controllers\Web\Member\DashboardController;
 use App\Http\Controllers\Web\Public\Auth\LoginController;
@@ -30,5 +31,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
             Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
             Route::put('/profile/password', ProfilePasswordController::class)->name('profile.password.update');
+            Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
         });
 });
