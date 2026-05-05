@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -41,6 +42,72 @@ class User extends Authenticatable
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
+    }
+    
+    public function latestSubscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class)->latestOfMany();
+    }
+    
+    public function activeSubscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class)
+            ->where('status', 'active')
+            ->latestOfMany();
+    }
+    
+    public function currentSubscription(): ?Subscription
+    {
+        return $this->latestSubscription;
+    }
+    
+    public function hasActiveSubscription(): bool
+    {
+        $subscription = $this->currentSubscription();
+        
+        if (! $subscription) {
+            return false;
+        }
+        
+        if ($subscription->status !== 'active') {
+            return false;
+        }
+        
+        return $subscription->ends_at === null || $subscription->ends_at->isFuture();
+    }
+    
+    public function onPlan(string $slug): bool
+    {
+        return $this->hasActiveSubscription()
+            && $this->currentSubscription()?->plan?->slug === $slug;
+    }
+    
+    public function subscriptionPlan(): ?Plan
+    {
+        return $this->currentSubscription()?->plan;
+    }
+    
+    public function subscriptionStatus(): ?string
+    {
+        return $this->currentSubscription()?->status;
+    }
+    
+    public function subscriptionEndsAt(): mixed
+    {
+        return $this->currentSubscription()?->ends_at;
+    }
+    
+    public function hasExpiredSubscription(): bool
+    {
+        $subscription = $this->currentSubscription();
+        
+        return $subscription?->ends_at !== null
+            && $subscription->ends_at->isPast();
+    }
+    
+    public function isSubscribed(): bool
+    {
+        return $this->hasActiveSubscription();
     }
     
     public function isAdmin(): bool

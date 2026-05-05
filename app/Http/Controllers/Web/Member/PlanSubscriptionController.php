@@ -29,7 +29,7 @@ class PlanSubscriptionController extends Controller
         }
         
         return redirect()
-            ->route('member.dashboard')
+            ->route('member.plans.index')
             ->with('success', 'Subscription updated successfully.');
     }
 }
