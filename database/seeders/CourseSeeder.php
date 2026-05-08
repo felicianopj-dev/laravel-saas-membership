@@ -13,14 +13,14 @@ class CourseSeeder extends Seeder
     public function run(): void
     {
         $freePlan = Plan::query()->where('slug', 'free')->first();
-        $proPlan = Plan::query()->where('slug', 'pro')->first();
-        $premiumPlan = Plan::query()->where('slug', 'premium')->first();
+        $proPlan = Plan::query()->where('slug', 'starter')->first();
+        $premiumPlan = Plan::query()->where('slug', 'pro')->first();
         
         $courses = [
             [
                 'title' => 'Laravel Membership Basics',
                 'description' => 'Learn the foundations of membership-based Laravel applications.',
-                'plans' => ['free', 'pro', 'premium'],
+                'plans' => ['free', 'starter', 'pro'],
                 'lessons' => [
                     'Understanding membership access',
                     'Building a member dashboard',
@@ -30,7 +30,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'SaaS Billing Architecture',
                 'description' => 'A practical overview of subscription flows, plans, and access rules.',
-                'plans' => ['pro', 'premium'],
+                'plans' => ['starter', 'pro'],
                 'lessons' => [
                     'Modeling plans and subscriptions',
                     'Handling subscription lifecycle states',
@@ -40,7 +40,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Stripe Webhooks for SaaS',
                 'description' => 'Explore how webhook-driven billing sync works in production SaaS apps.',
-                'plans' => ['pro', 'premium'],
+                'plans' => ['starter', 'pro'],
                 'lessons' => [
                     'Why webhooks matter',
                     'Syncing subscription state',
@@ -50,7 +50,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Advanced Laravel SaaS Patterns',
                 'description' => 'Advanced patterns for scalable Laravel SaaS applications.',
-                'plans' => ['premium'],
+                'plans' => ['pro'],
                 'lessons' => [
                     'Service layer organization',
                     'Authorization and policy design',
@@ -60,7 +60,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Premium Content Strategy',
                 'description' => 'Demo premium course content unlocked only by higher membership levels.',
-                'plans' => ['premium'],
+                'plans' => ['pro'],
                 'lessons' => [
                     'Designing premium content libraries',
                     'Managing access tiers',
@@ -98,8 +98,8 @@ class CourseSeeder extends Seeder
             $planIds = collect($courseData['plans'])
                 ->map(fn (string $slug) => match ($slug) {
                     'free' => $freePlan?->id,
-                    'pro' => $proPlan?->id,
-                    'premium' => $premiumPlan?->id,
+                    'starter' => $proPlan?->id,
+                    'pro' => $premiumPlan?->id,
                     default => null,
                 })
                 ->filter()
