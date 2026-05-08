@@ -9,17 +9,13 @@ class MemberPlansData
 {
     public static function make(User $user): array
     {
-        $currentSubscription = $user->subscriptions()
-            ->where('status', 'active')
-            ->latest('id')
-            ->first();
+        $currentSubscription = $user->currentSubscription();
         
         return [
             'current_plan_id' => $currentSubscription?->plan_id,
             
             'plans' => Plan::query()
                 ->where('is_active', true)
-                ->orderBy('price')
                 ->get()
                 ->map(fn (Plan $plan): array => [
                     'id' => $plan->id,
@@ -27,7 +23,20 @@ class MemberPlansData
                     'slug' => $plan->slug,
                     'price' => $plan->price,
                     'billing_interval' => $plan->billing_interval,
-                    'is_current' => $currentSubscription?->plan_id === $plan->id,
+                    
+                    'is_current' => $currentSubscription?->plan_id === $plan->id
+                        && $user->hasAccess(),
+                    
+                    'is_current_active' => $currentSubscription?->plan_id === $plan->id
+                        && $currentSubscription->status === 'active',
+                    
+                    'is_current_canceled' => $currentSubscription?->plan_id === $plan->id
+                        && $currentSubscription->status === 'canceled'
+                        && $user->hasAccess(),
+                    
+                    'current_subscription_ends_at' => $currentSubscription?->plan_id === $plan->id
+                        ? $currentSubscription->ends_at?->toDateString()
+                        : null,
                 ]),
         ];
     }

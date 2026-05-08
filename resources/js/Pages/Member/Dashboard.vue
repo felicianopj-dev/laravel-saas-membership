@@ -1,5 +1,5 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 import MemberLayout from '@/Layouts/MemberLayout.vue'
 
 defineProps({
@@ -40,6 +40,18 @@ const accessBadge = (hasAccess) => {
   return hasAccess
       ? 'bg-emerald-100 text-emerald-700'
       : 'bg-rose-100 text-rose-700'
+}
+
+const cancelSubscription = () => {
+  if (! window.confirm('Are you sure you want to cancel your subscription?')) {
+    return
+  }
+
+  router.post('/member/subscription/cancel')
+}
+
+const resumeSubscription = () => {
+  router.post('/member/subscription/resume')
 }
 </script>
 
@@ -129,6 +141,26 @@ const accessBadge = (hasAccess) => {
           >
             Not subscribed
           </span>
+        </div>
+
+        <div class="mt-6 flex flex-wrap gap-3 border-t border-slate-200 pt-6">
+          <button
+              v-if="subscription.is_active"
+              type="button"
+              class="inline-flex items-center rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700"
+              @click="cancelSubscription"
+          >
+            Cancel subscription
+          </button>
+
+          <button
+              v-if="subscription.is_canceled && subscription.has_access"
+              type="button"
+              class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+              @click="resumeSubscription"
+          >
+            Resume subscription
+          </button>
         </div>
       </div>
     </section>

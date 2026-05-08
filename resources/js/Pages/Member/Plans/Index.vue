@@ -26,6 +26,48 @@ const formatPrice = (price) => {
 const subscribe = (plan) => {
   router.post(`/member/plans/${plan.id}/subscribe`)
 }
+
+const resumeSubscription = () => {
+  router.post('/member/subscription/resume')
+}
+
+const planBadgeClass = (plan) => {
+  if (plan.is_current_active) {
+    return 'bg-emerald-100 text-emerald-700'
+  }
+
+  if (plan.is_current_canceled) {
+    return 'bg-amber-100 text-amber-700'
+  }
+
+  return 'bg-slate-100 text-slate-600'
+}
+
+const planButtonLabel = (plan) => {
+  if (plan.is_current_active) {
+    return 'Current Plan'
+  }
+
+  if (plan.is_current_canceled) {
+    return 'Resume Plan'
+  }
+
+  return 'Subscribe'
+}
+
+const handlePlanAction = (plan) => {
+  if (plan.is_current_active) {
+    return
+  }
+
+  if (plan.is_current_canceled) {
+    resumeSubscription()
+
+    return
+  }
+
+  subscribe(plan)
+}
 </script>
 
 <template>
@@ -48,7 +90,8 @@ const subscribe = (plan) => {
       <div
           v-for="plan in plans"
           :key="plan.id"
-          class="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+          class="flex flex-col rounded-2xl border bg-white p-6 shadow-sm"
+          :class="plan.is_current ? 'border-emerald-300' : 'border-slate-200'"
       >
         <div class="flex-1">
           <div class="flex items-start justify-between gap-4">
@@ -58,9 +101,10 @@ const subscribe = (plan) => {
 
             <span
                 v-if="plan.is_current"
-                class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700"
+                class="rounded-full px-3 py-1 text-xs font-semibold"
+                :class="planBadgeClass(plan)"
             >
-              Current
+              {{ plan.is_current_active ? 'Current' : 'Canceled' }}
             </span>
           </div>
 
@@ -77,6 +121,14 @@ const subscribe = (plan) => {
             </span>
           </div>
 
+          <div
+              v-if="plan.is_current_canceled"
+              class="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800"
+          >
+            This plan is canceled, but access remains enabled until
+            {{ plan.current_subscription_ends_at ?? 'the end of the current billing period' }}.
+          </div>
+
           <ul class="mt-6 space-y-3 text-sm text-slate-600">
             <li>Access to the member dashboard</li>
           </ul>
@@ -84,14 +136,16 @@ const subscribe = (plan) => {
 
         <button
             type="button"
-            :disabled="plan.is_current"
+            :disabled="plan.is_current_active"
             class="mt-6 inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition"
-            :class="plan.is_current
-        ? 'cursor-not-allowed bg-emerald-100 text-emerald-700'
-        : 'bg-slate-900 text-white hover:bg-slate-800'"
-            @click="!plan.is_current && subscribe(plan)"
+            :class="plan.is_current_active
+            ? 'cursor-not-allowed bg-emerald-100 text-emerald-700'
+            : plan.is_current_canceled
+              ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+              : 'bg-slate-900 text-white hover:bg-slate-800'"
+            @click="handlePlanAction(plan)"
         >
-          {{ plan.is_current ? 'Current Plan' : 'Subscribe' }}
+          {{ planButtonLabel(plan) }}
         </button>
       </div>
     </section>

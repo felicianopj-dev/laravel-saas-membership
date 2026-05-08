@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\Public\Auth\LoginController;
 use App\Http\Controllers\Web\Public\Auth\RegisterController;
 use App\Http\Controllers\Web\Member\ProfilePasswordController;
 use App\Http\Controllers\Web\Member\PlanSubscriptionController;
+use App\Http\Controllers\Web\Member\MemberSubscriptionController;
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -35,5 +36,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
             Route::post('/plans/{plan}/subscribe', PlanSubscriptionController::class)
                 ->name('plans.subscribe');
+            Route::post('/subscription/cancel', [MemberSubscriptionController::class, 'cancel'])->name('subscription.cancel');
+            Route::post('/subscription/resume', [MemberSubscriptionController::class, 'resume'])->name('subscription.resume');
         });
 });

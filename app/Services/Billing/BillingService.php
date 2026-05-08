@@ -60,7 +60,6 @@ class BillingService
         
         $subscription->update([
             'status' => 'canceled',
-            'ends_at' => $subscription->ends_at ?? now(),
         ]);
         
         return $subscription;
@@ -76,9 +75,14 @@ class BillingService
             ]);
         }
         
+        if ($subscription->ends_at?->isPast()) {
+            throw ValidationException::withMessages([
+                'subscription' => 'This subscription has already expired. Please choose a new plan.',
+            ]);
+        }
+        
         $subscription->update([
             'status' => 'active',
-            'ends_at' => null,
         ]);
         
         return $subscription;
