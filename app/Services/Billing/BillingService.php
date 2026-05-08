@@ -47,4 +47,40 @@ class BillingService
             ],
         );
     }
+    
+    public function cancel(User $user): Subscription
+    {
+        $subscription = $user->currentSubscription();
+        
+        if (! $subscription || $subscription->status !== 'active') {
+            throw ValidationException::withMessages([
+                'subscription' => 'No active subscription found.',
+            ]);
+        }
+        
+        $subscription->update([
+            'status' => 'canceled',
+            'ends_at' => $subscription->ends_at ?? now(),
+        ]);
+        
+        return $subscription;
+    }
+    
+    public function resume(User $user): Subscription
+    {
+        $subscription = $user->currentSubscription();
+        
+        if (! $subscription || $subscription->status !== 'canceled') {
+            throw ValidationException::withMessages([
+                'subscription' => 'No canceled subscription found.',
+            ]);
+        }
+        
+        $subscription->update([
+            'status' => 'active',
+            'ends_at' => null,
+        ]);
+        
+        return $subscription;
+    }
 }

@@ -61,7 +61,7 @@ class User extends Authenticatable
         return $this->latestSubscription;
     }
     
-    public function hasActiveSubscription(): bool
+    public function hasAccess(): bool
     {
         $subscription = $this->currentSubscription();
         
@@ -69,16 +69,20 @@ class User extends Authenticatable
             return false;
         }
         
-        if ($subscription->status !== 'active') {
-            return false;
+        if ($subscription->status === 'active') {
+            return true;
         }
         
-        return $subscription->ends_at === null || $subscription->ends_at->isFuture();
+        if ($subscription->status === 'canceled' && $subscription->ends_at?->isFuture()) {
+            return true;
+        }
+        
+        return false;
     }
     
     public function onPlan(string $slug): bool
     {
-        return $this->hasActiveSubscription()
+        return $this->hasAccess()
             && $this->currentSubscription()?->plan?->slug === $slug;
     }
     
@@ -107,7 +111,7 @@ class User extends Authenticatable
     
     public function isSubscribed(): bool
     {
-        return $this->hasActiveSubscription();
+        return $this->hasAccess();
     }
     
     public function isAdmin(): bool

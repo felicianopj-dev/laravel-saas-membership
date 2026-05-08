@@ -8,9 +8,9 @@ class MemberDashboardData
 {
     public static function make(User $user): array
     {
-        $subscription = $user->subscriptions()
+        $subscription = $user
+            ->latestSubscription()
             ->with('plan')
-            ->latest('id')
             ->first();
         
         return [
@@ -23,12 +23,17 @@ class MemberDashboardData
             'subscription' => $subscription
                 ? [
                     'plan_name' => $subscription->plan?->name,
+                    'plan_slug' => $subscription->plan?->slug,
                     'status' => $subscription->status,
                     'billing_interval' => $subscription->plan?->billing_interval,
                     'price' => $subscription->plan?->price,
                     'starts_at' => $subscription->starts_at?->toDateString(),
                     'ends_at' => $subscription->ends_at?->toDateString(),
                     'trial_ends_at' => $subscription->trial_ends_at?->toDateString(),
+                    'has_access' => $user->hasAccess(),
+                    'is_active' => $subscription->status === 'active',
+                    'is_canceled' => $subscription->status === 'canceled',
+                    'is_expired' => $subscription->ends_at?->isPast() ?? false,
                 ]
                 : null,
         ];
