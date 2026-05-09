@@ -10,6 +10,7 @@ use App\Http\Controllers\Web\Member\MemberCourseController;
 use App\Http\Controllers\Web\Public\Auth\RegisterController;
 use App\Http\Controllers\Web\Member\ProfilePasswordController;
 use App\Http\Controllers\Web\Member\PlanSubscriptionController;
+use App\Http\Controllers\Web\Member\MemberCourseShowController;
 use App\Http\Controllers\Web\Member\MemberSubscriptionController;
 
 Route::get('/', HomeController::class)->name('home');
@@ -39,7 +40,7 @@ Route::middleware('auth')->group(function () {
                 ->name('plans.subscribe');
             Route::post('/subscription/cancel', [MemberSubscriptionController::class, 'cancel'])->name('subscription.cancel');
             Route::post('/subscription/resume', [MemberSubscriptionController::class, 'resume'])->name('subscription.resume');
-            Route::get('/courses', MemberCourseController::class)
-                ->name('courses.index');
+            Route::get('/courses', MemberCourseController::class)->name('courses.index');
+            Route::get('/courses/{course}', MemberCourseShowController::class)->name('member.courses.show');
         });
 });
