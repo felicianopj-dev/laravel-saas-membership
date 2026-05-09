@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\Public\Auth\RegisterController;
 use App\Http\Controllers\Web\Member\ProfilePasswordController;
 use App\Http\Controllers\Web\Member\PlanSubscriptionController;
 use App\Http\Controllers\Web\Member\MemberCourseShowController;
+use App\Http\Controllers\Web\Member\MemberLessonShowController;
 use App\Http\Controllers\Web\Member\MemberSubscriptionController;
 
 Route::get('/', HomeController::class)->name('home');
@@ -42,5 +43,6 @@ Route::middleware('auth')->group(function () {
             Route::post('/subscription/resume', [MemberSubscriptionController::class, 'resume'])->name('subscription.resume');
             Route::get('/courses', MemberCourseController::class)->name('courses.index');
             Route::get('/courses/{course}', MemberCourseShowController::class)->name('member.courses.show');
+            Route::get('/courses/{course}/lessons/{lesson}', MemberLessonShowController::class)->name('courses.lessons.show');
         });
 });
