@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { Head, Link, usePage } from '@inertiajs/vue3'
 import { memberNavigation } from '@/Data/member-navigation'
+import FlashMessage from '@/Components/FlashMessage.vue'
 
 defineProps({
   title: {
@@ -234,6 +235,7 @@ const closeMobileMenu = () => {
       </header>
 
       <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        <FlashMessage />
         <slot />
       </main>
     </div>

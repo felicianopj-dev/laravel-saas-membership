@@ -8,7 +8,6 @@ const page = usePage()
 const userRecord = computed(() => page.props.userRecord)
 console.log(userRecord.value)
 console.log(userRecord.value.is_deleted)
-const flash = computed(() => page.props.flash ?? {})
 const authUser = computed(() => page.props.auth?.user ?? null)
 
 const profileForm = useForm({
@@ -93,13 +92,6 @@ const restoreUser = () => {
         >
           Back to users
         </Link>
-      </div>
-
-      <div
-          v-if="flash.success"
-          class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"
-      >
-        {{ flash.success }}
       </div>
 
       <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">

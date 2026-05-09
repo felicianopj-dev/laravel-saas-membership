@@ -7,7 +7,6 @@ const page = usePage()
 
 const users = computed(() => page.props.users)
 const filters = computed(() => page.props.filters ?? { search: '', with_deleted: false })
-const flash = computed(() => page.props.flash ?? {})
 const authUser = computed(() => page.props.auth?.user ?? null)
 
 const search = ref(filters.value.search ?? '')
@@ -108,20 +107,6 @@ const restoreUser = (user) => {
             </label>
           </div>
         </div>
-      </div>
-
-      <div
-          v-if="flash.success"
-          class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"
-      >
-        {{ flash.success }}
-      </div>
-
-      <div
-          v-if="flash.error"
-          class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
-      >
-        {{ flash.error }}
       </div>
 
       <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">

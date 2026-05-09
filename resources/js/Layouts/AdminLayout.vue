@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import AdminSidebar from '@/Components/Admin/AdminSidebar.vue'
 import AdminHeader from '@/Components/Admin/AdminHeader.vue'
 import AdminMobileSidebar from '@/Components/Admin/AdminMobileSidebar.vue'
+import FlashMessage from '@/Components/FlashMessage.vue'
 
 const isMobileSidebarOpen = ref(false)
 
@@ -29,6 +30,7 @@ const closeSidebar = () => {
         <AdminHeader @toggle-sidebar="openSidebar" />
 
         <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <FlashMessage />
           <slot />
         </main>
       </div>
