@@ -33,16 +33,29 @@ Route::middleware('auth')->group(function () {
         ->group(function () {
             Route::get('/', DashboardController::class)->name('dashboard');
             
-            Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-            Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-            Route::put('/profile/password', ProfilePasswordController::class)->name('profile.password.update');
-            Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
-            Route::post('/plans/{plan}/subscribe', PlanSubscriptionController::class)
-                ->name('plans.subscribe');
-            Route::post('/subscription/cancel', [MemberSubscriptionController::class, 'cancel'])->name('subscription.cancel');
-            Route::post('/subscription/resume', [MemberSubscriptionController::class, 'resume'])->name('subscription.resume');
-            Route::get('/courses', MemberCourseController::class)->name('courses.index');
-            Route::get('/courses/{course}', MemberCourseShowController::class)->name('member.courses.show');
-            Route::get('/courses/{course}/lessons/{lesson}', MemberLessonShowController::class)->name('courses.lessons.show');
+            Route::group(['prefix' => 'profile'], function () {
+                Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
+                Route::put('/', [ProfileController::class, 'update'])->name('profile.update');
+                Route::put('/password', ProfilePasswordController::class)->name('profile.password.update');
+            });
+            
+            Route::group(['prefix' => 'plans'], function () {
+                Route::get('/', [PlanController::class, 'index'])->name('plans.index');
+                Route::post('/{plan}/subscribe', PlanSubscriptionController::class)->name('plans.subscribe');
+            });
+            
+            Route::group(['prefix' => 'subscription'], function () {
+                Route::post('/cancel', [MemberSubscriptionController::class, 'cancel'])->name('subscription.cancel');
+                Route::post('/resume', [MemberSubscriptionController::class, 'resume'])->name('subscription.resume');
+            });
+            
+            Route::group(['prefix' => '/courses'], function () {
+                Route::get('/', MemberCourseController::class)->name('courses.index');
+                Route::get('/{course}', MemberCourseShowController::class)->name('member.courses.show');
+                
+                Route::group(['prefix' => '{course}'], function () {
+                    Route::get('/lessons/{lesson}', MemberLessonShowController::class)->name('courses.lessons.show');
+                });
+            });
         });
 });
