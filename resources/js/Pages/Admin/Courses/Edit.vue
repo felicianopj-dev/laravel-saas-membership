@@ -1,0 +1,56 @@
+<script setup lang="ts">
+import { useForm } from '@inertiajs/vue3'
+import AdminLayout from '@/Layouts/AdminLayout.vue'
+import CourseForm from './CourseForm.vue'
+
+defineOptions({
+  layout: AdminLayout,
+})
+
+const props = defineProps<{
+  course: {
+    id: number
+    title: string
+    description: string | null
+    is_published: boolean
+    plan_ids: number[]
+  }
+  plans: Array<{
+    id: number
+    name: string
+    slug: string
+  }>
+}>()
+
+const form = useForm({
+  title: props.course.title,
+  description: props.course.description ?? '',
+  is_published: props.course.is_published,
+  plan_ids: props.course.plan_ids,
+})
+
+const submit = () => {
+  form.put(`/admin/courses/${props.course.id}`)
+}
+</script>
+
+<template>
+  <div class="space-y-6">
+    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h1 class="text-2xl font-bold text-slate-900">
+        Edit course
+      </h1>
+
+      <p class="mt-1 text-sm text-slate-500">
+        Update course details, publishing status, and plan access.
+      </p>
+    </section>
+
+    <CourseForm
+        :form="form"
+        :plans="plans"
+        submit-label="Save changes"
+        @submit="submit"
+    />
+  </div>
+</template>

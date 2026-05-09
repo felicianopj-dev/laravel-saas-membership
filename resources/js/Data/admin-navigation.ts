@@ -16,4 +16,9 @@ export const adminNavigation: AdminNavigationItem[] = [
         href: '/admin/users',
         startsWith: '/admin/users',
     },
+    {
+        label: 'Courses',
+        href: '/admin/courses',
+        startsWith: '/admin/courses',
+    },
 ]
