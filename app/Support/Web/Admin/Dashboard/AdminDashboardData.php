@@ -88,13 +88,6 @@ class AdminDashboardData
                     'color' => 'emerald',
                 ],
             ],
-            
-            'nextStep' => [
-                'eyebrow' => 'Next step',
-                'title' => 'Billing and subscription management',
-                'description' => 'This layout is ready to receive subscription pages, plan management, invoices, and member detail screens.',
-                'badge' => 'Portfolio-ready admin foundation',
-            ],
         ];
     }
 }

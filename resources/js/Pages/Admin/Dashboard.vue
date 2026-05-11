@@ -27,10 +27,6 @@ defineProps({
     type: Array,
     required: true,
   },
-  nextStep: {
-    type: Object,
-    required: true,
-  },
 })
 </script>
 
@@ -144,9 +140,9 @@ defineProps({
       </section>
 
       <!-- Right column -->
-      <section class="space-y-6">
+      <section class="flex h-full flex-col">
         <!-- Growth summary -->
-        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
+        <div class="flex h-full flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/60">
           <h2 class="text-lg font-semibold text-slate-950">
             Growth summary
           </h2>
@@ -182,25 +178,6 @@ defineProps({
                 />
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Next step card -->
-        <div class="rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-6 text-white shadow-xl shadow-slate-300/40">
-          <p class="text-sm font-medium text-slate-300">
-            {{ nextStep.eyebrow }}
-          </p>
-
-          <h3 class="mt-2 text-2xl font-semibold tracking-tight">
-            {{ nextStep.title }}
-          </h3>
-
-          <p class="mt-3 text-sm leading-6 text-slate-300">
-            {{ nextStep.description }}
-          </p>
-
-          <div class="mt-6 inline-flex rounded-2xl bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-            {{ nextStep.badge }}
           </div>
         </div>
       </section>
