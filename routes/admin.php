@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\UserRestoreController;
 use App\Http\Controllers\Admin\AdminCourseController;
 use App\Http\Controllers\Admin\AdminLessonController;
 use App\Http\Controllers\Admin\UserPasswordController;
+use App\Http\Controllers\Admin\AdminSubscriptionController;
 
 Route::middleware(['web', 'auth', 'admin'])
     ->prefix('admin')
@@ -32,4 +33,6 @@ Route::middleware(['web', 'auth', 'admin'])
         Route::resource('/courses.lessons', AdminLessonController::class)
             ->except(['show'])
             ->names('courses.lessons');
+        
+        Route::get('/subscriptions', AdminSubscriptionController::class)->name('subscriptions.index');
     });

@@ -21,4 +21,9 @@ export const adminNavigation: AdminNavigationItem[] = [
         href: '/admin/courses',
         startsWith: '/admin/courses',
     },
+    {
+        label: 'Subscriptions',
+        href: '/admin/subscriptions',
+        startsWith: '/admin/subscriptions',
+    },
 ]
