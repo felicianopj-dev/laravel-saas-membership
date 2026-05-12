@@ -21,7 +21,7 @@ class PlanSeeder extends Seeder
             [
                 'name' => 'Starter',
                 'slug' => 'starter',
-                'price' => 2900,
+                'price' => 1900,
                 'billing_interval' => 'monthly',
                 'is_active' => true,
                 'stripe_price_id' => config('services.stripe.prices.monthly.starter'),
@@ -29,7 +29,7 @@ class PlanSeeder extends Seeder
             [
                 'name' => 'Pro',
                 'slug' => 'pro',
-                'price' => 7900,
+                'price' => 4900,
                 'billing_interval' => 'monthly',
                 'is_active' => true,
                 'stripe_price_id' => config('services.stripe.prices.monthly.pro'),
