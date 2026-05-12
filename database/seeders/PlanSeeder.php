@@ -25,6 +25,7 @@ class PlanSeeder extends Seeder
                 'billing_interval' => 'monthly',
                 'is_active' => true,
                 'stripe_price_id' => config('services.stripe.prices.monthly.starter'),
+                'stripe_product_id' => config('services.stripe.products.starter'),
             ],
             [
                 'name' => 'Pro',
@@ -33,6 +34,7 @@ class PlanSeeder extends Seeder
                 'billing_interval' => 'monthly',
                 'is_active' => true,
                 'stripe_price_id' => config('services.stripe.prices.monthly.pro'),
+                'stripe_product_id' => config('services.stripe.products.pro'),
             ],
         ];
         

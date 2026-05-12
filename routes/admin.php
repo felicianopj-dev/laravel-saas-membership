@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserDeleteController;
 use App\Http\Controllers\Admin\UserRestoreController;
@@ -35,4 +36,6 @@ Route::middleware(['web', 'auth', 'admin'])
             ->names('courses.lessons');
         
         Route::get('/subscriptions', AdminSubscriptionController::class)->name('subscriptions.index');
+        
+        Route::resource('plans', PlanController::class);
     });

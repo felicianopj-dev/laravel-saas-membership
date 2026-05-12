@@ -44,6 +44,10 @@ return [
                 'starter' => env('STRIPE_PRICE_STARTER_MONTHLY'),
                 'pro' => env('STRIPE_PRICE_PRO_MONTHLY'),
             ]
+        ],
+        'products' => [
+            'starter' => env('STRIPE_PRODUCT_STARTER_MONTHLY'),
+            'pro' => env('STRIPE_PRODUCT_PRO_MONTHLY'),
         ]
     ],
 
