@@ -16,6 +16,8 @@ class MemberPlansData
             
             'plans' => Plan::query()
                 ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('price')
                 ->get()
                 ->map(fn (Plan $plan): array => [
                     'id' => $plan->id,
@@ -24,20 +26,20 @@ class MemberPlansData
                     'price' => $plan->price,
                     'billing_interval' => $plan->billing_interval,
                     
-                    'is_current' => $currentSubscription?->plan_id === $plan->id
-                        && $user->hasAccess(),
+                    'is_current' => $currentSubscription?->plan_id === $plan->id,
                     
                     'is_current_active' => $currentSubscription?->plan_id === $plan->id
-                        && $currentSubscription->status === 'active',
+                        && in_array($currentSubscription->status, ['active', 'trialing'], true),
                     
                     'is_current_canceled' => $currentSubscription?->plan_id === $plan->id
                         && $currentSubscription->status === 'canceled'
-                        && $user->hasAccess(),
+                        && $currentSubscription->ends_at?->isFuture(),
                     
                     'current_subscription_ends_at' => $currentSubscription?->plan_id === $plan->id
                         ? $currentSubscription->ends_at?->toDateString()
                         : null,
-                ]),
+                ])
+                ->values(),
         ];
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Billing;
+namespace App\Services\Billing\Data;
 
 use Illuminate\Support\Carbon;
 

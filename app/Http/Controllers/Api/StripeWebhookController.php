@@ -15,6 +15,13 @@ use UnexpectedValueException;
 
 class StripeWebhookController extends Controller
 {
+    private const ACTIVE_STATUSES = [
+        'active',
+        'trialing',
+        'past_due',
+        'incomplete',
+    ];
+    
     public function __invoke(Request $request): Response
     {
         $payload = $request->getContent();
@@ -89,6 +96,10 @@ class StripeWebhookController extends Controller
             ])->save();
         }
         
+        $this->cancelOtherLocalSubscriptions($user, $stripeSubscription);
+        
+        $currentPeriodEnd = $this->resolveCurrentPeriodEnd($stripeSubscription);
+        
         Subscription::query()->updateOrCreate(
             [
                 'stripe_id' => $stripeSubscription->id,
@@ -96,15 +107,24 @@ class StripeWebhookController extends Controller
             [
                 'user_id' => $user->id,
                 'plan_id' => $plan->id,
-                'status' => $stripeSubscription->status,
+                'status' => $this->resolveSubscriptionStatus($stripeSubscription),
                 'stripe_status' => $stripeSubscription->status,
                 'stripe_price' => $stripePriceId,
                 'starts_at' => $this->timestampToDate($stripeSubscription->start_date ?? null),
                 'trial_ends_at' => $this->timestampToDate($stripeSubscription->trial_end ?? null),
-                'ends_at' => $this->timestampToDate($stripeSubscription->cancel_at ?? null),
-                'current_period_end' => $this->timestampToDate($stripeSubscription->current_period_end ?? null),
+                'ends_at' => $this->resolveSubscriptionEndsAt($stripeSubscription, $currentPeriodEnd),
+                'current_period_end' => $currentPeriodEnd,
             ],
         );
+    }
+    
+    private function resolveCurrentPeriodEnd(object $stripeSubscription): ?string
+    {
+        $timestamp = $stripeSubscription->current_period_end
+            ?? $stripeSubscription->items->data[0]->current_period_end
+            ?? null;
+        
+        return $this->timestampToDate($timestamp);
     }
     
     private function handleSubscriptionDeleted(object $stripeSubscription): void
@@ -125,6 +145,23 @@ class StripeWebhookController extends Controller
         ]);
     }
     
+    private function cancelOtherLocalSubscriptions(User $user, object $stripeSubscription): void
+    {
+        Subscription::query()
+            ->where('user_id', $user->id)
+            ->whereIn('status', self::ACTIVE_STATUSES)
+            ->where(function ($query) use ($stripeSubscription) {
+                $query
+                    ->whereNull('stripe_id')
+                    ->orWhere('stripe_id', '!=', $stripeSubscription->id);
+            })
+            ->update([
+                'status' => 'canceled',
+                'stripe_status' => 'canceled',
+                'ends_at' => now(),
+            ]);
+    }
+    
     private function resolveUser(object $stripeSubscription, ?object $session = null): ?User
     {
         $userId = $session?->metadata?->user_id
@@ -140,6 +177,36 @@ class StripeWebhookController extends Controller
             return User::query()
                 ->where('stripe_id', $stripeSubscription->customer)
                 ->first();
+        }
+        
+        return null;
+    }
+    
+    private function resolveSubscriptionStatus(object $stripeSubscription): string
+    {
+        if (($stripeSubscription->cancel_at_period_end ?? false) === true) {
+            return 'canceled';
+        }
+        
+        return $stripeSubscription->status;
+    }
+    
+    private function resolveSubscriptionEndsAt(object $stripeSubscription): ?string
+    {
+        if (! empty($stripeSubscription->ended_at)) {
+            return $this->timestampToDate($stripeSubscription->ended_at);
+        }
+        
+        if (! empty($stripeSubscription->cancel_at)) {
+            return $this->timestampToDate($stripeSubscription->cancel_at);
+        }
+        
+        if (($stripeSubscription->cancel_at_period_end ?? false) === true) {
+            return $this->timestampToDate($stripeSubscription->current_period_end ?? null);
+        }
+        
+        if (($stripeSubscription->status ?? null) === 'canceled') {
+            return now()->toDateTimeString();
         }
         
         return null;

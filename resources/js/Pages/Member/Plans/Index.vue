@@ -1,5 +1,5 @@
 <script setup>
-import { Link, router } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
 import MemberLayout from '@/Layouts/MemberLayout.vue'
 
 defineProps({
@@ -20,7 +20,7 @@ defineOptions({
 const formatPrice = (price) => {
   if (price === 0) return 'Free'
 
-  return `R$ ${(price / 100).toFixed(2)}`
+  return `$ ${(price / 100).toFixed(2)}`
 }
 
 const subscribe = (plan) => {
@@ -29,6 +29,18 @@ const subscribe = (plan) => {
 
 const resumeSubscription = () => {
   router.post('/member/subscription/resume')
+}
+
+const planBadgeLabel = (plan) => {
+  if (plan.is_current_active) {
+    return 'Current'
+  }
+
+  if (plan.is_current_canceled) {
+    return 'Canceled'
+  }
+
+  return null
 }
 
 const planBadgeClass = (plan) => {
@@ -53,6 +65,18 @@ const planButtonLabel = (plan) => {
   }
 
   return 'Subscribe'
+}
+
+const planButtonClass = (plan) => {
+  if (plan.is_current_active) {
+    return 'cursor-not-allowed bg-emerald-100 text-emerald-700'
+  }
+
+  if (plan.is_current_canceled) {
+    return 'bg-emerald-600 text-white hover:bg-emerald-700'
+  }
+
+  return 'bg-slate-900 text-white hover:bg-slate-800'
 }
 
 const handlePlanAction = (plan) => {
@@ -82,7 +106,7 @@ const handlePlanAction = (plan) => {
       </h2>
 
       <p class="mt-2 max-w-2xl text-sm text-slate-600">
-        Select the membership plan that best fits your needs. Payment integration will be added later.
+        Select the membership plan that best fits your needs.
       </p>
     </section>
 
@@ -100,11 +124,11 @@ const handlePlanAction = (plan) => {
             </h3>
 
             <span
-                v-if="plan.is_current"
+                v-if="planBadgeLabel(plan)"
                 class="rounded-full px-3 py-1 text-xs font-semibold"
                 :class="planBadgeClass(plan)"
             >
-              {{ plan.is_current_active ? 'Current' : 'Canceled' }}
+              {{ planBadgeLabel(plan) }}
             </span>
           </div>
 
@@ -138,11 +162,7 @@ const handlePlanAction = (plan) => {
             type="button"
             :disabled="plan.is_current_active"
             class="mt-6 inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition"
-            :class="plan.is_current_active
-            ? 'cursor-not-allowed bg-emerald-100 text-emerald-700'
-            : plan.is_current_canceled
-              ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-              : 'bg-slate-900 text-white hover:bg-slate-800'"
+            :class="planButtonClass(plan)"
             @click="handlePlanAction(plan)"
         >
           {{ planButtonLabel(plan) }}

@@ -7,6 +7,8 @@ use App\Models\Plan;
 use App\Services\Billing\BillingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Response;
 
 class PlanSubscriptionController extends Controller
 {
@@ -15,10 +17,10 @@ class PlanSubscriptionController extends Controller
     ) {
     }
     
-    public function __invoke(Plan $plan): RedirectResponse
+    public function __invoke(Plan $plan): Response|RedirectResponse
     {
         try {
-            $this->billingService->subscribe(
+            $checkoutUrl = $this->billingService->createSubscriptionCheckout(
                 user: auth()->user(),
                 plan: $plan,
             );
@@ -28,8 +30,6 @@ class PlanSubscriptionController extends Controller
                 ->with('error', $exception->validator->errors()->first());
         }
         
-        return redirect()
-            ->route('member.plans.index')
-            ->with('success', 'Subscription updated successfully.');
+        return Inertia::location($checkoutUrl);
     }
 }

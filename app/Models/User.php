@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Laravel\Cashier\Billable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,6 +16,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
     use SoftDeletes;
+    use Billable;
     
     protected $fillable = [
         'name',
@@ -23,6 +25,10 @@ class User extends Authenticatable
         'password',
         'role',
         'status',
+        'stripe_id',
+        'pm_type',
+        'pm_last_four',
+        'trial_ends_at',
     ];
     
     protected $hidden = [
@@ -58,7 +64,21 @@ class User extends Authenticatable
     
     public function currentSubscription(): ?Subscription
     {
-        return $this->latestSubscription;
+        /** @var Subscription|null $subscription */
+        $subscription = $this->subscriptions()
+            ->where(function ($query) {
+                $query
+                    ->whereIn('status', ['active', 'trialing', 'past_due', 'incomplete'])
+                    ->orWhere(function ($query) {
+                        $query
+                            ->where('status', 'canceled')
+                            ->where('ends_at', '>', now());
+                    });
+            })
+            ->latest('id')
+            ->first();
+        
+        return $subscription;
     }
     
     public function hasAccess(): bool
@@ -69,7 +89,7 @@ class User extends Authenticatable
             return false;
         }
         
-        if ($subscription->status === 'active') {
+        if (in_array($subscription->status, ['active', 'trialing'], true)) {
             return true;
         }
         

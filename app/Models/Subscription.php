@@ -17,12 +17,17 @@ class Subscription extends Model
         'starts_at',
         'ends_at',
         'trial_ends_at',
+        'stripe_id',
+        'stripe_status',
+        'stripe_price',
+        'current_period_end',
     ];
     
     protected $casts = [
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
         'trial_ends_at' => 'datetime',
+        'current_period_end' => 'datetime',
     ];
     
     public function user(): BelongsTo
