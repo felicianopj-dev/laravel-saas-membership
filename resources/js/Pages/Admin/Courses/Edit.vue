@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { Link, useForm } from '@inertiajs/vue3'
+import {Head, Link, useForm} from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import CourseForm from './CourseForm.vue'
-
-defineOptions({
-  layout: AdminLayout,
-})
 
 const props = defineProps<{
   course: {
@@ -35,7 +31,10 @@ const submit = () => {
 </script>
 
 <template>
-  <div class="space-y-6">
+  <Head title="Edit Course" />
+
+  <AdminLayout title="Edit Course">
+    <div class="space-y-6">
     <section class="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <div>
         <h1 class="text-2xl font-bold text-slate-900">
@@ -61,5 +60,6 @@ const submit = () => {
         submit-label="Save changes"
         @submit="submit"
     />
-  </div>
+    </div>
+  </AdminLayout>
 </template>

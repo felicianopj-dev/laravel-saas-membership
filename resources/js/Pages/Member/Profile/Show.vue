@@ -36,12 +36,15 @@ const submitPasswordForm = () => {
 
   <MemberLayout title="My Profile">
     <div class="space-y-6">
-      <div>
-        <h1 class="text-2xl font-semibold text-slate-900">My Profile</h1>
-        <p class="mt-1 text-sm text-slate-600">
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h1 class="text-2xl font-bold text-slate-900">
+          My Profile
+        </h1>
+
+        <p class="mt-1 text-sm text-slate-500">
           Manage your account information and password.
         </p>
-      </div>
+      </section>
 
       <div
           v-if="$page.props.flash?.success"
@@ -50,17 +53,26 @@ const submitPasswordForm = () => {
         {{ $page.props.flash.success }}
       </div>
 
-      <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="mb-6">
-          <h2 class="text-lg font-semibold text-slate-900">Account Information</h2>
+          <h2 class="text-lg font-semibold text-slate-900">
+            Account Information
+          </h2>
+
           <p class="mt-1 text-sm text-slate-600">
             Update your basic account details.
           </p>
         </div>
 
-        <form class="space-y-5" @submit.prevent="submitProfileForm">
+        <form
+            class="space-y-5"
+            @submit.prevent="submitProfileForm"
+        >
           <div>
-            <label for="name" class="mb-2 block text-sm font-medium text-slate-700">
+            <label
+                for="name"
+                class="mb-2 block text-sm font-medium text-slate-700"
+            >
               Name
             </label>
 
@@ -80,7 +92,10 @@ const submitPasswordForm = () => {
           </div>
 
           <div>
-            <label for="email" class="mb-2 block text-sm font-medium text-slate-700">
+            <label
+                for="email"
+                class="mb-2 block text-sm font-medium text-slate-700"
+            >
               Email
             </label>
 
@@ -104,6 +119,7 @@ const submitPasswordForm = () => {
               <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
                 Role
               </p>
+
               <p class="mt-1 text-sm font-medium text-slate-900">
                 {{ profile.role }}
               </p>
@@ -113,6 +129,7 @@ const submitPasswordForm = () => {
               <p class="text-xs font-medium uppercase tracking-wide text-slate-500">
                 Status
               </p>
+
               <p class="mt-1 text-sm font-medium text-slate-900">
                 {{ profile.status }}
               </p>
@@ -129,19 +146,28 @@ const submitPasswordForm = () => {
             </button>
           </div>
         </form>
-      </div>
+      </section>
 
-      <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="mb-6">
-          <h2 class="text-lg font-semibold text-slate-900">Update Password</h2>
+          <h2 class="text-lg font-semibold text-slate-900">
+            Update Password
+          </h2>
+
           <p class="mt-1 text-sm text-slate-600">
             Choose a strong password to keep your account secure.
           </p>
         </div>
 
-        <form class="space-y-5" @submit.prevent="submitPasswordForm">
+        <form
+            class="space-y-5"
+            @submit.prevent="submitPasswordForm"
+        >
           <div>
-            <label for="current_password" class="mb-2 block text-sm font-medium text-slate-700">
+            <label
+                for="current_password"
+                class="mb-2 block text-sm font-medium text-slate-700"
+            >
               Current Password
             </label>
 
@@ -161,7 +187,10 @@ const submitPasswordForm = () => {
           </div>
 
           <div>
-            <label for="password" class="mb-2 block text-sm font-medium text-slate-700">
+            <label
+                for="password"
+                class="mb-2 block text-sm font-medium text-slate-700"
+            >
               New Password
             </label>
 
@@ -181,7 +210,10 @@ const submitPasswordForm = () => {
           </div>
 
           <div>
-            <label for="password_confirmation" class="mb-2 block text-sm font-medium text-slate-700">
+            <label
+                for="password_confirmation"
+                class="mb-2 block text-sm font-medium text-slate-700"
+            >
               Confirm New Password
             </label>
 
@@ -203,7 +235,7 @@ const submitPasswordForm = () => {
             </button>
           </div>
         </form>
-      </div>
+      </section>
     </div>
   </MemberLayout>
 </template>

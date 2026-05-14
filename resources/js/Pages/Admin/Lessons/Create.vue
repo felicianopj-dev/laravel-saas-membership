@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3'
+import { Head, useForm } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import LessonForm from './LessonForm.vue'
-
-defineOptions({
-  layout: AdminLayout,
-})
 
 const props = defineProps<{
   course: {
@@ -27,22 +23,26 @@ const submit = () => {
 </script>
 
 <template>
-  <div class="space-y-6">
-    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h1 class="text-2xl font-bold text-slate-900">
-        Create lesson
-      </h1>
+  <Head title="Create Lesson" />
 
-      <p class="mt-1 text-sm text-slate-500">
-        Add a new lesson to {{ course.title }}.
-      </p>
-    </section>
+  <AdminLayout title="Create Lesson">
+    <div class="space-y-6">
+      <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h1 class="text-2xl font-bold text-slate-900">
+          Create lesson
+        </h1>
 
-    <LessonForm
-        :form="form"
-        :course="course"
-        submit-label="Create lesson"
-        @submit="submit"
-    />
-  </div>
+        <p class="mt-1 text-sm text-slate-500">
+          Add a new lesson to {{ course.title }}.
+        </p>
+      </section>
+
+      <LessonForm
+          :form="form"
+          :course="course"
+          submit-label="Create lesson"
+          @submit="submit"
+      />
+    </div>
+  </AdminLayout>
 </template>
