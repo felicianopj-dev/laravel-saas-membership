@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import MemberLayout from '@/Layouts/MemberLayout.vue'
 
@@ -17,6 +18,8 @@ defineOptions({
   layout: (h, page) => h(MemberLayout, { title: 'Plans' }, () => page),
 })
 
+const processingPlanId = ref(null)
+
 const formatPrice = (price) => {
   if (price === 0) return 'Free'
 
@@ -24,11 +27,19 @@ const formatPrice = (price) => {
 }
 
 const subscribe = (plan) => {
-  router.post(`/member/plans/${plan.id}/subscribe`)
+  router.post(`/member/plans/${plan.id}/subscribe`, {}, {
+    onFinish: () => {
+      processingPlanId.value = null
+    },
+  })
 }
 
-const resumeSubscription = () => {
-  router.post('/member/subscription/resume')
+const resumeSubscription = (plan) => {
+  router.post('/member/subscription/resume', {}, {
+    onFinish: () => {
+      processingPlanId.value = null
+    },
+  })
 }
 
 const planBadgeLabel = (plan) => {
@@ -55,7 +66,19 @@ const planBadgeClass = (plan) => {
   return 'bg-slate-100 text-slate-600'
 }
 
+const isProcessingPlan = (plan) => {
+  return processingPlanId.value === plan.id
+}
+
+const hasProcessingPlan = () => {
+  return processingPlanId.value !== null
+}
+
 const planButtonLabel = (plan) => {
+  if (isProcessingPlan(plan)) {
+    return 'Loading...'
+  }
+
   if (plan.is_current_active) {
     return 'Current Plan'
   }
@@ -72,6 +95,16 @@ const planButtonClass = (plan) => {
     return 'cursor-not-allowed bg-emerald-100 text-emerald-700'
   }
 
+  if (isProcessingPlan(plan)) {
+    return 'cursor-wait bg-slate-300 text-slate-600'
+  }
+
+  if (hasProcessingPlan()) {
+    return plan.is_current_canceled
+        ? 'bg-emerald-600 text-white'
+        : 'bg-slate-900 text-white'
+  }
+
   if (plan.is_current_canceled) {
     return 'bg-emerald-600 text-white hover:bg-emerald-700'
   }
@@ -80,12 +113,14 @@ const planButtonClass = (plan) => {
 }
 
 const handlePlanAction = (plan) => {
-  if (plan.is_current_active) {
+  if (plan.is_current_active || hasProcessingPlan()) {
     return
   }
 
+  processingPlanId.value = plan.id
+
   if (plan.is_current_canceled) {
-    resumeSubscription()
+    resumeSubscription(plan)
 
     return
   }
@@ -160,11 +195,32 @@ const handlePlanAction = (plan) => {
 
         <button
             type="button"
-            :disabled="plan.is_current_active"
-            class="mt-6 inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition"
+            :disabled="plan.is_current_active || hasProcessingPlan()"
+            class="mt-6 inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold transition disabled:pointer-events-none"
             :class="planButtonClass(plan)"
             @click="handlePlanAction(plan)"
         >
+          <svg
+              v-if="isProcessingPlan(plan)"
+              class="mr-2 h-4 w-4 animate-spin"
+              viewBox="0 0 24 24"
+              fill="none"
+          >
+            <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+            />
+            <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
+
           {{ planButtonLabel(plan) }}
         </button>
       </div>
