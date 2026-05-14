@@ -30,6 +30,11 @@ class PlanSubscriptionController extends Controller
                 ->with('error', $exception->validator->errors()->first());
         }
         
+        if ($checkoutUrl === route('member.plans.index')) {
+            return to_route('member.plans.index')
+                ->with('success', 'Plan updated successfully.');
+        }
+        
         return Inertia::location($checkoutUrl);
     }
 }
