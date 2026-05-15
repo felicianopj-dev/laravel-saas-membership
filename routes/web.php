@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\Member\DashboardController;
 use App\Http\Controllers\Web\Public\Auth\LoginController;
 use App\Http\Controllers\Web\Member\MemberCourseController;
 use App\Http\Controllers\Web\Public\Auth\RegisterController;
+use App\Http\Controllers\Web\Member\BillingPortalController;
 use App\Http\Controllers\Web\Member\ProfilePasswordController;
 use App\Http\Controllers\Web\Member\PlanSubscriptionController;
 use App\Http\Controllers\Web\Member\MemberCourseShowController;
@@ -57,5 +58,7 @@ Route::middleware('auth')->group(function () {
                     Route::get('/lessons/{lesson}', MemberLessonShowController::class)->name('courses.lessons.show');
                 });
             });
+            
+            Route::get('/billing/portal', BillingPortalController::class)->name('billing.portal');
         });
 });
