@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
             
             Route::group(['prefix' => '/courses'], function () {
                 Route::get('/', MemberCourseController::class)->name('courses.index');
-                Route::get('/{course}', MemberCourseShowController::class)->name('member.courses.show');
+                Route::get('/{course}', MemberCourseShowController::class)->name('courses.show');
                 
                 Route::group(['prefix' => '{course}'], function () {
                     Route::get('/lessons/{lesson}', MemberLessonShowController::class)->name('courses.lessons.show');
