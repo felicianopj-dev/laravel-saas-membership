@@ -65,17 +65,5 @@ import AdminNavLink from '@/Components/Admin/AdminNavLink.vue'
         </AdminNavLink>
       </nav>
     </div>
-
-    <div class="border-t border-slate-800 px-6 py-5">
-      <div class="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
-        <p class="text-sm font-medium text-white">
-          Admin area
-        </p>
-
-        <p class="mt-1 text-xs leading-5 text-slate-400">
-          Manage members, subscriptions, metrics, and future billing modules from a single place.
-        </p>
-      </div>
-    </div>
   </aside>
 </template>

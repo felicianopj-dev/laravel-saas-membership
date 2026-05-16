@@ -65,20 +65,6 @@ const closeMobileMenu = () => {
           {{ item.label }}
         </Link>
       </nav>
-
-      <div class="border-t border-slate-800 px-6 py-5">
-        <div class="text-xs uppercase tracking-[0.2em] text-slate-400">
-          Logged in as
-        </div>
-
-        <div class="mt-2 text-sm font-semibold text-white">
-          {{ user?.name ?? 'Member' }}
-        </div>
-
-        <div class="text-sm text-slate-400">
-          {{ user?.email ?? 'member@example.com' }}
-        </div>
-      </div>
     </aside>
 
     <div class="lg:pl-64">
