@@ -21,6 +21,14 @@ class UserSeeder extends Seeder
             'status' => 'active',
         ]);
         
+        User::factory()->create([
+            'name' => 'User',
+            'email' => 'user@example.com',
+            'password' => '123',
+            'role' => 'member',
+            'status' => 'active',
+        ]);
+        
         User::factory(10)->create([
             'role' => 'member',
             'status' => 'active',
