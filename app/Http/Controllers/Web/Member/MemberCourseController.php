@@ -14,7 +14,7 @@ class MemberCourseController extends Controller
     {
         $user = $request->user()?->loadMissing('activeSubscription.plan');
         
-        $currentPlanId = $user->activeSubscription?->plan?->id;
+        $currentPlanId = $user->currentSubscription()?->plan?->id;
         
         $courses = Course::query()
             ->with('plans:id,name')

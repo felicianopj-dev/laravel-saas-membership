@@ -17,7 +17,7 @@ defineProps({
 const formatPrice = (price) => {
   if (price === null || price === undefined) return '—'
 
-  return `R$ ${(price / 100).toFixed(2)}`
+  return `$ ${(price / 100).toFixed(2)}`
 }
 
 const statusBadge = (status) => {
