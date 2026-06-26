@@ -34,7 +34,7 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-    
+
     'stripe' => [
         'secret' => env('STRIPE_SECRET'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
@@ -43,12 +43,12 @@ return [
             'monthly' => [
                 'starter' => env('STRIPE_PRICE_STARTER_MONTHLY'),
                 'pro' => env('STRIPE_PRICE_PRO_MONTHLY'),
-            ]
+            ],
         ],
         'products' => [
             'starter' => env('STRIPE_PRODUCT_STARTER_MONTHLY'),
             'pro' => env('STRIPE_PRODUCT_PRO_MONTHLY'),
-        ]
+        ],
     ],
 
 ];

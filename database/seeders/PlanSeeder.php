@@ -37,7 +37,7 @@ class PlanSeeder extends Seeder
                 'stripe_product_id' => config('services.stripe.products.pro'),
             ],
         ];
-        
+
         foreach ($plans as $plan) {
             Plan::query()->updateOrCreate(
                 ['slug' => $plan['slug']],

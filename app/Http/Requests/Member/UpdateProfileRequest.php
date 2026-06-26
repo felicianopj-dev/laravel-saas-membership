@@ -12,18 +12,18 @@ class UpdateProfileRequest extends FormRequest
         // Only authenticated users can update their own profile
         return auth()->check();
     }
-    
+
     public function rules(): array
     {
         $user = $this->user();
-        
+
         return [
             'name' => [
                 'required',
                 'string',
                 'max:255',
             ],
-            
+
             'email' => [
                 'required',
                 'string',
@@ -34,7 +34,7 @@ class UpdateProfileRequest extends FormRequest
             ],
         ];
     }
-    
+
     public function messages(): array
     {
         return [

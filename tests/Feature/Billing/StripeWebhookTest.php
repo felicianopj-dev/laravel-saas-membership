@@ -1,0 +1,142 @@
+<?php
+
+use App\Models\Plan;
+use App\Models\Subscription;
+use App\Models\User;
+use Illuminate\Testing\TestResponse;
+
+const WEBHOOK_SECRET = 'whsec_test_secret';
+
+beforeEach(function () {
+    config(['services.stripe.webhook_secret' => WEBHOOK_SECRET]);
+});
+
+function signedWebhook(array $payload): TestResponse
+{
+    $body = json_encode($payload);
+    $timestamp = time();
+    $signature = hash_hmac('sha256', "{$timestamp}.{$body}", WEBHOOK_SECRET);
+
+    return test()->call(
+        'POST',
+        '/api/webhooks/stripe',
+        [],
+        [],
+        [],
+        [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_STRIPE_SIGNATURE' => "t={$timestamp},v1={$signature}",
+        ],
+        $body,
+    );
+}
+
+function subscriptionEvent(
+    string $eventId,
+    User $user,
+    Plan $plan,
+    string $status = 'active',
+    string $type = 'customer.subscription.updated',
+    array $overrides = [],
+): array {
+    return [
+        'id' => $eventId,
+        'type' => $type,
+        'data' => [
+            'object' => array_merge([
+                'id' => 'sub_123',
+                'object' => 'subscription',
+                'customer' => 'cus_123',
+                'status' => $status,
+                'cancel_at_period_end' => false,
+                'start_date' => now()->subDay()->timestamp,
+                'current_period_end' => now()->addMonth()->timestamp,
+                'metadata' => ['user_id' => (string) $user->id],
+                'items' => [
+                    'data' => [[
+                        'id' => 'si_123',
+                        'price' => ['id' => $plan->stripe_price_id],
+                        'current_period_end' => now()->addMonth()->timestamp,
+                    ]],
+                ],
+            ], $overrides),
+        ],
+    ];
+}
+
+it('rejects webhooks with an invalid signature', function () {
+    $response = test()->call(
+        'POST',
+        '/api/webhooks/stripe',
+        [],
+        [],
+        [],
+        ['CONTENT_TYPE' => 'application/json', 'HTTP_STRIPE_SIGNATURE' => 't=1,v1=deadbeef'],
+        json_encode(['id' => 'evt_bad', 'type' => 'customer.subscription.updated']),
+    );
+
+    $response->assertStatus(400);
+    expect(Subscription::count())->toBe(0);
+});
+
+it('syncs a subscription from a verified webhook', function () {
+    $user = User::factory()->create();
+    $plan = Plan::factory()->create(['stripe_price_id' => 'price_abc']);
+
+    $response = signedWebhook(subscriptionEvent('evt_1', $user, $plan, status: 'active'));
+
+    $response->assertOk();
+
+    $this->assertDatabaseHas('subscriptions', [
+        'stripe_id' => 'sub_123',
+        'user_id' => $user->id,
+        'plan_id' => $plan->id,
+        'status' => 'active',
+    ]);
+
+    expect($user->fresh()->stripe_id)->toBe('cus_123');
+    $this->assertDatabaseHas('stripe_webhook_events', [
+        'stripe_event_id' => 'evt_1',
+    ]);
+});
+
+it('does not re-process a duplicate event id', function () {
+    $user = User::factory()->create();
+    $plan = Plan::factory()->create(['stripe_price_id' => 'price_abc']);
+
+    signedWebhook(subscriptionEvent('evt_dup', $user, $plan, status: 'active'))->assertOk();
+
+    // Same event id, but a payload that would flip the status if processed.
+    signedWebhook(subscriptionEvent('evt_dup', $user, $plan, status: 'canceled'))
+        ->assertOk();
+
+    // The duplicate must be ignored: status stays as first processed.
+    $this->assertDatabaseHas('subscriptions', [
+        'stripe_id' => 'sub_123',
+        'status' => 'active',
+    ]);
+    expect(Subscription::where('stripe_id', 'sub_123')->count())->toBe(1);
+});
+
+it('marks a subscription canceled on the deleted event', function () {
+    $user = User::factory()->create(['stripe_id' => 'cus_123']);
+    $plan = Plan::factory()->create(['stripe_price_id' => 'price_abc']);
+
+    $subscription = Subscription::factory()->create([
+        'user_id' => $user->id,
+        'plan_id' => $plan->id,
+        'status' => 'active',
+        'stripe_id' => 'sub_123',
+    ]);
+
+    signedWebhook(subscriptionEvent(
+        'evt_del',
+        $user,
+        $plan,
+        status: 'canceled',
+        type: 'customer.subscription.deleted',
+        overrides: ['ended_at' => now()->timestamp],
+    ))->assertOk();
+
+    expect($subscription->fresh()->status)->toBe('canceled');
+});

@@ -11,11 +11,11 @@ class UpdateUserRequest extends FormRequest
     {
         return true;
     }
-    
+
     public function rules(): array
     {
         $user = $this->route('user');
-        
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => [

@@ -32,12 +32,12 @@ class PlanController extends Controller
                 'is_active' => $plan->is_active,
                 'sort_order' => $plan->sort_order,
             ]);
-        
+
         return Inertia::render('Admin/Plans/Index', [
             'plans' => $plans,
         ]);
     }
-    
+
     public function create(): Response
     {
         return Inertia::render('Admin/Plans/Create', [
@@ -46,16 +46,16 @@ class PlanController extends Controller
             ],
         ]);
     }
-    
+
     public function store(StorePlanRequest $request): RedirectResponse
     {
         Plan::create($request->validated());
-        
+
         return redirect()
             ->route('admin.plans.index')
             ->with('success', 'Plan created successfully.');
     }
-    
+
     public function edit(Plan $plan): Response
     {
         return Inertia::render('Admin/Plans/Edit', [
@@ -74,24 +74,24 @@ class PlanController extends Controller
             ],
         ]);
     }
-    
+
     public function update(UpdatePlanRequest $request, Plan $plan): RedirectResponse
     {
         $plan->update($request->validated());
-        
+
         return redirect()
             ->route('admin.plans.index')
             ->with('success', 'Plan updated successfully.');
     }
-    
+
     public function destroy(Plan $plan): RedirectResponse
     {
         if ($plan->subscriptions()->exists()) {
             return back()->with('error', 'This plan cannot be deleted because it has subscriptions.');
         }
-        
+
         $plan->delete();
-        
+
         return redirect()
             ->route('admin.plans.index')
             ->with('success', 'Plan deleted successfully.');

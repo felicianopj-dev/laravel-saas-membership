@@ -14,6 +14,5 @@ readonly class BillingSubscriptionResult
         public Carbon $startsAt,
         public Carbon $endsAt,
         public ?Carbon $trialEndsAt = null,
-    ) {
-    }
+    ) {}
 }

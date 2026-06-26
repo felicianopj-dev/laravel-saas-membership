@@ -17,7 +17,7 @@ class ApiResponse
             'data' => $data,
         ], $code);
     }
-    
+
     public static function error(
         string $text = 'Error',
         int $code = 400,

@@ -11,11 +11,11 @@ class UpdatePlanRequest extends FormRequest
     {
         return $this->user()?->isAdmin() === true;
     }
-    
+
     public function rules(): array
     {
         $plan = $this->route('plan');
-        
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'slug' => [

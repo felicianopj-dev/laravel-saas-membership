@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Inertia\Inertia;
-use Inertia\Response;
 use App\Http\Controllers\Controller;
 use App\Support\Web\Admin\Dashboard\AdminDashboardData;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class DashboardController extends Controller
 {

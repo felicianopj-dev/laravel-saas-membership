@@ -15,7 +15,7 @@ return new class extends Migration
             $table->timestamp('trial_ends_at')->nullable()->after('pm_last_four');
         });
     }
-    
+
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {

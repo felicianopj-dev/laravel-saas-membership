@@ -9,10 +9,10 @@ class AdminDashboardData
         return [
             'title' => 'Dashboard',
             'description' => 'Overview of your SaaS performance, membership activity, and business health.',
-            
+
             // These dashboard values are currently mocked to establish the admin UI contract.
             // They can be replaced later with database-driven metrics without changing the view.
-            
+
             'stats' => [
                 [
                     'label' => 'Total members',
@@ -39,7 +39,7 @@ class AdminDashboardData
                     'description' => 'Lower is better',
                 ],
             ],
-            
+
             'recentMembers' => [
                 [
                     'name' => 'Olivia Carter',
@@ -70,7 +70,7 @@ class AdminDashboardData
                     'joinedAt' => '2026-04-10',
                 ],
             ],
-            
+
             'growthSummary' => [
                 [
                     'label' => 'New members',

@@ -15,11 +15,11 @@ return new class extends Migration
             $table->foreignIdFor(Course::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Plan::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
-            
+
             $table->unique(['course_id', 'plan_id']);
         });
     }
-    
+
     public function down(): void
     {
         Schema::dropIfExists('course_plan');

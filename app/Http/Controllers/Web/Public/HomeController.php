@@ -14,7 +14,7 @@ class HomeController extends Controller
         if (! $request->user()) {
             return redirect()->route('login');
         }
-        
+
         return redirect()->to(
             RedirectUserByRole::path($request->user())
         );

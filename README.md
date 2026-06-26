@@ -2,7 +2,7 @@
 
 SaaS course membership platform with subscription billing, gated content access, and admin/member areas.
 
-![Laravel](https://img.shields.io/badge/Laravel_11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel_13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP_8.4-777BB4?style=for-the-badge&logo=php&logoColor=white)
 ![Vue](https://img.shields.io/badge/Vue_3-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
 ![Inertia](https://img.shields.io/badge/Inertia.js-9553E9?style=for-the-badge)

@@ -10,11 +10,11 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class SubscriptionFactory extends Factory
 {
     protected $model = Subscription::class;
-    
+
     public function definition(): array
     {
         $startsAt = fake()->dateTimeBetween('-3 months', 'now');
-        
+
         return [
             'user_id' => User::factory(),
             'plan_id' => Plan::factory(),

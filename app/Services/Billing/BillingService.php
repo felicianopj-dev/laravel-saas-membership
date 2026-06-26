@@ -12,9 +12,8 @@ class BillingService
 {
     public function __construct(
         private readonly BillingProviderInterface $billingProvider,
-    ) {
-    }
-    
+    ) {}
+
     public function createSubscriptionCheckout(User $user, Plan $plan): string
     {
         if (! $plan->is_active) {
@@ -22,19 +21,19 @@ class BillingService
                 'plan' => 'This plan is not available.',
             ]);
         }
-        
+
         $currentSubscription = $this->currentBillableSubscription($user);
-        
+
         if ($currentSubscription?->plan_id === $plan->id) {
             throw ValidationException::withMessages([
                 'plan' => 'You are already subscribed to this plan.',
             ]);
         }
-        
+
         if ($plan->price === 0) {
             return $this->activateFreePlan($user, $plan, $currentSubscription);
         }
-        
+
         if ($currentSubscription?->stripe_id) {
             return $this->billingProvider->changeSubscriptionPlan(
                 user: $user,
@@ -42,62 +41,62 @@ class BillingService
                 plan: $plan,
             );
         }
-        
+
         return $this->billingProvider->createSubscriptionCheckout($user, $plan);
     }
-    
+
     public function cancel(User $user): Subscription
     {
         $subscription = $this->currentBillableSubscription($user);
-        
+
         if (! $subscription) {
             throw ValidationException::withMessages([
                 'subscription' => 'No active subscription found.',
             ]);
         }
-        
+
         if ($subscription->stripe_id) {
             $this->billingProvider->cancelSubscription($user, $subscription);
-            
+
             return $subscription->fresh();
         }
-        
+
         $subscription->update([
             'status' => 'canceled',
             'stripe_status' => $subscription->stripe_status ? 'canceled' : null,
             'ends_at' => now(),
         ]);
-        
+
         return $subscription->fresh();
     }
-    
+
     public function resume(User $user): Subscription
     {
         $subscription = $user->currentSubscription();
-        
+
         if (! $subscription || $subscription->status !== 'canceled') {
             throw ValidationException::withMessages([
                 'subscription' => 'No canceled subscription found.',
             ]);
         }
-        
+
         if ($subscription->ends_at?->isPast()) {
             throw ValidationException::withMessages([
                 'subscription' => 'This subscription has already expired. Please choose a new plan.',
             ]);
         }
-        
+
         $this->billingProvider->resumeSubscription($user, $subscription);
-        
+
         return $subscription->fresh();
     }
-    
+
     private function activateFreePlan(User $user, Plan $plan, ?Subscription $currentSubscription = null): string
     {
         if ($currentSubscription?->stripe_id) {
             $this->billingProvider->cancelSubscription($user, $currentSubscription);
         }
-        
+
         $user->subscriptions()
             ->whereIn('status', ['active', 'trialing', 'past_due', 'incomplete'])
             ->update([
@@ -105,7 +104,7 @@ class BillingService
                 'stripe_status' => 'canceled',
                 'ends_at' => now(),
             ]);
-        
+
         $user->subscriptions()->create([
             'plan_id' => $plan->id,
             'status' => 'active',
@@ -117,10 +116,10 @@ class BillingService
             'trial_ends_at' => null,
             'current_period_end' => null,
         ]);
-        
+
         return route('member.plans.index');
     }
-    
+
     private function currentBillableSubscription(User $user): ?Subscription
     {
         return $user
