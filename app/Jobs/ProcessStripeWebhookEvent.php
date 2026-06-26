@@ -6,6 +6,7 @@ use App\Models\Plan;
 use App\Models\StripeWebhookEvent;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Services\Billing\Concerns\ResolvesStripeTimestamps;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -20,6 +21,7 @@ class ProcessStripeWebhookEvent implements ShouldQueue
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
+    use ResolvesStripeTimestamps;
     use SerializesModels;
 
     private const ACTIVE_STATUSES = [
@@ -182,15 +184,6 @@ class ProcessStripeWebhookEvent implements ShouldQueue
         return null;
     }
 
-    private function resolveCurrentPeriodEnd(object $stripeSubscription): ?string
-    {
-        $timestamp = $stripeSubscription->current_period_end
-            ?? $stripeSubscription->items->data[0]->current_period_end
-            ?? null;
-
-        return $this->timestampToDate($timestamp);
-    }
-
     private function resolveSubscriptionStatus(object $stripeSubscription): string
     {
         if (($stripeSubscription->cancel_at_period_end ?? false) === true) {
@@ -219,14 +212,5 @@ class ProcessStripeWebhookEvent implements ShouldQueue
         }
 
         return null;
-    }
-
-    private function timestampToDate(null|int|string $timestamp): ?string
-    {
-        if (! $timestamp) {
-            return null;
-        }
-
-        return now()->setTimestamp((int) $timestamp)->toDateTimeString();
     }
 }
