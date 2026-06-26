@@ -140,3 +140,24 @@ it('marks a subscription canceled on the deleted event', function () {
 
     expect($subscription->fresh()->status)->toBe('canceled');
 });
+
+it('falls back to the subscription item for current_period_end (Stripe 2025+ API)', function () {
+    $user = User::factory()->create();
+    $plan = Plan::factory()->create(['stripe_price_id' => 'price_abc']);
+
+    // Top-level current_period_end absent (as in newer API versions); only the
+    // subscription item carries it.
+    signedWebhook(subscriptionEvent(
+        'evt_period',
+        $user,
+        $plan,
+        status: 'active',
+        overrides: ['current_period_end' => null],
+    ))->assertOk();
+
+    $subscription = Subscription::query()->where('stripe_id', 'sub_123')->first();
+
+    expect($subscription->current_period_end)->not->toBeNull()
+        ->and($subscription->current_period_end->toDateString())
+        ->toBe(now()->addMonth()->toDateString());
+});

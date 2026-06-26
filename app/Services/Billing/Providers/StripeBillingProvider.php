@@ -5,6 +5,7 @@ namespace App\Services\Billing\Providers;
 use App\Models\Plan;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Services\Billing\Concerns\ResolvesStripeTimestamps;
 use App\Services\Billing\Contracts\BillingProviderInterface;
 use RuntimeException;
 use Stripe\Checkout\Session;
@@ -13,6 +14,8 @@ use Stripe\StripeClient;
 
 class StripeBillingProvider implements BillingProviderInterface
 {
+    use ResolvesStripeTimestamps;
+
     public function createSubscriptionCheckout(User $user, Plan $plan): string
     {
         if (empty($plan->stripe_price_id)) {
@@ -122,11 +125,8 @@ class StripeBillingProvider implements BillingProviderInterface
             'cancel_at_period_end' => true,
         ]);
 
-        $periodEnd = $this->timestampToDate(
-            $stripeSubscription->current_period_end
-            ?? $stripeSubscription->cancel_at
-            ?? null
-        );
+        $periodEnd = $this->resolveCurrentPeriodEnd($stripeSubscription)
+            ?? $this->timestampToDate($stripeSubscription->cancel_at ?? null);
 
         $subscription->update([
             'status' => 'canceled',
@@ -159,20 +159,9 @@ class StripeBillingProvider implements BillingProviderInterface
             'status' => $stripeSubscription->status,
             'stripe_status' => $stripeSubscription->status,
             'ends_at' => null,
-            'current_period_end' => $this->timestampToDate($stripeSubscription->current_period_end ?? null),
+            'current_period_end' => $this->resolveCurrentPeriodEnd($stripeSubscription),
         ]);
 
         return route('member.plans.index');
-    }
-
-    private function timestampToDate(null|int|string $timestamp): ?string
-    {
-        if (! $timestamp) {
-            return null;
-        }
-
-        return now()
-            ->setTimestamp((int) $timestamp)
-            ->toDateTimeString();
     }
 }
