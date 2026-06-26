@@ -14,42 +14,38 @@ class MemberLessonShowController extends Controller
 {
     public function __invoke(Request $request, Course $course, Lesson $lesson): Response|RedirectResponse
     {
-        $user = $request->user();
-        
-        $user->loadMissing('activeSubscription.plan');
-        
-        $currentPlanId = $user->activeSubscription?->plan?->id;
-        
+        $currentPlanId = $request->user()->accessiblePlanId();
+
         $course->load('plans:id,name');
-        
+
         $hasAccess = $currentPlanId
             && $course->plans->contains('id', $currentPlanId);
-        
+
         if (! $hasAccess) {
             return redirect()
                 ->route('member.courses.index')
                 ->with('error', 'Upgrade your plan to access this course.');
         }
-        
+
         if ($lesson->course_id !== $course->id || ! $lesson->is_published) {
             abort(404);
         }
-        
+
         $lessons = $course->lessons()
             ->where('is_published', true)
             ->orderBy('sort_order')
             ->get(['id', 'course_id', 'title', 'slug', 'sort_order']);
-        
+
         $currentIndex = $lessons->search(fn (Lesson $item) => $item->id === $lesson->id);
-        
+
         $previousLesson = $currentIndex > 0
             ? $lessons[$currentIndex - 1]
             : null;
-        
+
         $nextLesson = $currentIndex !== false && $currentIndex < $lessons->count() - 1
             ? $lessons[$currentIndex + 1]
             : null;
-        
+
         return Inertia::render('Member/Lessons/Show', [
             'course' => [
                 'id' => $course->id,

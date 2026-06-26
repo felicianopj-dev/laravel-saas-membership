@@ -13,26 +13,24 @@ class MemberCourseShowController extends Controller
 {
     public function __invoke(Request $request, Course $course): Response|RedirectResponse
     {
-        $user = $request->user();
-        
-        $currentPlanId = $user->currentSubscription()?->plan?->id;
-        
+        $currentPlanId = $request->user()->accessiblePlanId();
+
         $course->load([
             'plans:id,name',
             'lessons' => fn ($query) => $query
                 ->where('is_published', true)
                 ->orderBy('sort_order'),
         ]);
-        
+
         $hasAccess = $currentPlanId
             && $course->plans->contains('id', $currentPlanId);
-        
+
         if (! $hasAccess) {
             return redirect()
                 ->route('member.courses.index')
                 ->with('error', 'Upgrade your plan to access this course.');
         }
-        
+
         return Inertia::render('Member/Courses/Show', [
             'course' => [
                 'id' => $course->id,
