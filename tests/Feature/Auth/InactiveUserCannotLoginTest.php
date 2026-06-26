@@ -10,13 +10,13 @@ it('prevents inactive users from logging in', function () {
         'role' => 'member',
         'status' => 'inactive',
     ]);
-    
+
     $response = $this->post('/login', [
         'email' => $user->email,
         'password' => 'password',
     ]);
-    
+
     $response->assertSessionHasErrors();
-    
+
     $this->assertGuest();
 });

@@ -12,25 +12,25 @@ return new class extends Migration
             $table->text('description')
                 ->nullable()
                 ->after('slug');
-            
+
             $table->string('currency', 3)
                 ->default('usd')
                 ->after('price');
-            
+
             $table->string('stripe_product_id')
                 ->nullable()
                 ->after('billing_interval');
-            
+
             $table->string('stripe_price_id')
                 ->nullable()
                 ->after('stripe_product_id');
-            
+
             $table->unsignedInteger('sort_order')
                 ->default(0)
                 ->after('is_active');
         });
     }
-    
+
     public function down(): void
     {
         Schema::table('plans', function (Blueprint $table) {

@@ -11,13 +11,13 @@ class UserDeleteController extends Controller
     public function __invoke(User $user): RedirectResponse
     {
         $authenticatedUser = auth()->user();
-        
+
         if ($authenticatedUser !== null && $user->is($authenticatedUser)) {
             return back()->with('error', 'You cannot delete your own account.');
         }
-        
+
         $user->delete();
-        
+
         return back()->with('success', 'User deleted successfully.');
     }
 }

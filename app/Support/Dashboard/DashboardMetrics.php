@@ -19,7 +19,7 @@ class DashboardMetrics
             'plans' => Plan::query()->count(),
         ];
     }
-    
+
     public function recentMembers(int $limit = 5): Collection
     {
         return User::query()

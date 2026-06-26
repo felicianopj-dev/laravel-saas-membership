@@ -38,7 +38,7 @@ class AdminSubscriptionController extends Controller
                     'billing_interval' => $subscription->plan->billing_interval,
                 ] : null,
             ]);
-        
+
         return Inertia::render('Admin/Subscriptions/Index', [
             'subscriptions' => $subscriptions,
         ]);

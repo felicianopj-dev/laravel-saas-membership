@@ -12,7 +12,7 @@ class UpdatePasswordRequest extends FormRequest
     {
         return auth()->check();
     }
-    
+
     public function rules(): array
     {
         return [
@@ -28,17 +28,17 @@ class UpdatePasswordRequest extends FormRequest
             ],
         ];
     }
-    
+
     public function after(): array
     {
         return [
             function (): void {
                 $user = $this->user();
-                
+
                 if (! $user) {
                     return;
                 }
-                
+
                 if (! Hash::check((string) $this->input('current_password'), $user->password)) {
                     throw ValidationException::withMessages([
                         'current_password' => 'The current password is incorrect.',
@@ -47,7 +47,7 @@ class UpdatePasswordRequest extends FormRequest
             },
         ];
     }
-    
+
     public function messages(): array
     {
         return [

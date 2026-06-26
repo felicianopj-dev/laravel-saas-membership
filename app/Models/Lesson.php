@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Lesson extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'course_id',
         'title',
@@ -18,7 +18,7 @@ class Lesson extends Model
         'sort_order',
         'is_published',
     ];
-    
+
     protected function casts(): array
     {
         return [
@@ -26,7 +26,7 @@ class Lesson extends Model
             'sort_order' => 'integer',
         ];
     }
-    
+
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);

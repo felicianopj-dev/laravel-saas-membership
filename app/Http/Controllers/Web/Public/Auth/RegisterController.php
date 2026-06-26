@@ -2,29 +2,28 @@
 
 namespace App\Http\Controllers\Web\Public\Auth;
 
-use App\Models\Plan;
 use App\Http\Controllers\Controller;
-use App\Services\Billing\BillingService;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\Plan;
 use App\Models\User;
+use App\Services\Billing\BillingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
-use Illuminate\Validation\ValidationException;
 
 class RegisterController extends Controller
 {
     public function __construct(
         private readonly BillingService $billingService,
-    ) {
-    }
-    
+    ) {}
+
     public function create(): Response
     {
         return Inertia::render('Auth/Register');
     }
-    
+
     public function store(RegisterRequest $request): RedirectResponse
     {
         $user = User::query()->create([
@@ -34,10 +33,10 @@ class RegisterController extends Controller
             'role' => 'member',
             'status' => 'active',
         ]);
-        
+
         try {
             $plan = Plan::where('slug', 'free')->firstOrFail();
-            
+
             $this->billingService->createSubscriptionCheckout(
                 user: $user->fresh(),
                 plan: $plan,
@@ -47,11 +46,11 @@ class RegisterController extends Controller
                 ->back()
                 ->with('error', $exception->validator->errors()->first());
         }
-        
+
         Auth::login($user);
-        
+
         $request->session()->regenerate();
-        
+
         return redirect()->route('member.dashboard');
     }
 }

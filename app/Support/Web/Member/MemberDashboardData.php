@@ -12,7 +12,7 @@ class MemberDashboardData
             ->latestSubscription()
             ->with('plan')
             ->first();
-        
+
         return [
             'summary' => [
                 'member_name' => $user->name,

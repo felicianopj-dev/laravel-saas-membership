@@ -12,7 +12,7 @@ return new class extends Migration
             $table->softDeletes()->after('updated_at');
         });
     }
-    
+
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table): void {

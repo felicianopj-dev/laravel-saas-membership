@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Services\Billing\Contracts\BillingProviderInterface;
 use App\Services\Billing\Providers\MockBillingProvider;
 use App\Services\Billing\Providers\StripeBillingProvider;
-use App\Services\Billing\Contracts\BillingProviderInterface;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,8 +16,8 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(BillingProviderInterface::class, function () {
             return match (config('billing.driver')) {
-                'stripe' => new StripeBillingProvider(),
-                default => new MockBillingProvider(),
+                'stripe' => new StripeBillingProvider,
+                default => new MockBillingProvider,
             };
         });
     }

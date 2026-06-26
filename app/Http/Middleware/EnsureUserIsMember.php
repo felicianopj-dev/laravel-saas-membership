@@ -11,9 +11,9 @@ class EnsureUserIsMember
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-        
+
         abort_unless($user && $user->isMember(), 403);
-        
+
         return $next($request);
     }
 }

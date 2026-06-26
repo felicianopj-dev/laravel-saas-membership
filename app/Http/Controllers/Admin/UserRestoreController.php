@@ -11,15 +11,15 @@ class UserRestoreController extends Controller
     public function __invoke(int $userId): RedirectResponse
     {
         $user = User::withTrashed()->findOrFail($userId);
-        
+
         if (! $user->trashed()) {
             return redirect()
                 ->route('admin.users.index')
                 ->with('success', 'User is already active.');
         }
-        
+
         $user->restore();
-        
+
         return redirect()
             ->route('admin.users.edit', $userId)
             ->with('success', 'User restored successfully.');

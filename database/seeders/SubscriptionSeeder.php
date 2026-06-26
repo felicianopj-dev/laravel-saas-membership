@@ -14,16 +14,16 @@ class SubscriptionSeeder extends Seeder
     {
         $starterPlan = Plan::query()->where('slug', 'starter')->first();
         $proPlan = Plan::query()->where('slug', 'pro')->first();
-        
+
         if (! $starterPlan || ! $proPlan) {
             return;
         }
-        
+
         $members = User::query()
             ->where('role', 'member')
             ->orderBy('id')
             ->get();
-        
+
         foreach ($members as $index => $member) {
             $subscriptionData = match ($index % 4) {
                 0 => [
@@ -49,11 +49,11 @@ class SubscriptionSeeder extends Seeder
                 ],
                 default => null,
             };
-            
+
             if (! $subscriptionData) {
                 continue;
             }
-            
+
             Subscription::query()->updateOrCreate(
                 ['user_id' => $member->id],
                 array_merge(

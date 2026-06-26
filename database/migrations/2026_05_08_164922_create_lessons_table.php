@@ -18,11 +18,11 @@ return new class extends Migration
             $table->unsignedInteger('sort_order')->default(0);
             $table->boolean('is_published')->default(true);
             $table->timestamps();
-            
+
             $table->unique(['course_id', 'slug']);
         });
     }
-    
+
     public function down(): void
     {
         Schema::dropIfExists('lessons');

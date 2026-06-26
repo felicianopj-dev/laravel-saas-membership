@@ -33,19 +33,19 @@ class AdminCourseController extends Controller
                 ]),
                 'created_at' => $course->created_at?->toISOString(),
             ]);
-        
+
         return Inertia::render('Admin/Courses/Index', [
             'courses' => $courses,
         ]);
     }
-    
+
     public function create(): Response
     {
         return Inertia::render('Admin/Courses/Create', [
             'plans' => $this->plans(),
         ]);
     }
-    
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -55,7 +55,7 @@ class AdminCourseController extends Controller
             'plan_ids' => ['array'],
             'plan_ids.*' => ['integer', 'exists:plans,id'],
         ]);
-        
+
         $course = Course::query()->create([
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']),
@@ -63,18 +63,18 @@ class AdminCourseController extends Controller
             'thumbnail' => null,
             'is_published' => $validated['is_published'],
         ]);
-        
+
         $course->plans()->sync($validated['plan_ids'] ?? []);
-        
+
         return redirect()
             ->route('admin.courses.index')
             ->with('success', 'Course created successfully.');
     }
-    
+
     public function edit(Course $course): Response
     {
         $course->load('plans:id');
-        
+
         return Inertia::render('Admin/Courses/Edit', [
             'course' => [
                 'id' => $course->id,
@@ -86,7 +86,7 @@ class AdminCourseController extends Controller
             'plans' => $this->plans(),
         ]);
     }
-    
+
     public function update(Request $request, Course $course): RedirectResponse
     {
         $validated = $request->validate([
@@ -96,30 +96,30 @@ class AdminCourseController extends Controller
             'plan_ids' => ['array'],
             'plan_ids.*' => ['integer', 'exists:plans,id'],
         ]);
-        
+
         $course->update([
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']),
             'description' => $validated['description'] ?? null,
             'is_published' => $validated['is_published'],
         ]);
-        
+
         $course->plans()->sync($validated['plan_ids'] ?? []);
-        
+
         return redirect()
             ->route('admin.courses.index')
             ->with('success', 'Course updated successfully.');
     }
-    
+
     public function destroy(Course $course): RedirectResponse
     {
         $course->delete();
-        
+
         return redirect()
             ->route('admin.courses.index')
             ->with('success', 'Course deleted successfully.');
     }
-    
+
     private function plans(): array
     {
         return Plan::query()

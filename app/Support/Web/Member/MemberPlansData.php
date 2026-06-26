@@ -10,10 +10,10 @@ class MemberPlansData
     public static function make(User $user): array
     {
         $currentSubscription = $user->currentSubscription();
-        
+
         return [
             'current_plan_id' => $currentSubscription?->plan_id,
-            
+
             'plans' => Plan::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
@@ -25,16 +25,16 @@ class MemberPlansData
                     'slug' => $plan->slug,
                     'price' => $plan->price,
                     'billing_interval' => $plan->billing_interval,
-                    
+
                     'is_current' => $currentSubscription?->plan_id === $plan->id,
-                    
+
                     'is_current_active' => $currentSubscription?->plan_id === $plan->id
                         && in_array($currentSubscription->status, ['active', 'trialing'], true),
-                    
+
                     'is_current_canceled' => $currentSubscription?->plan_id === $plan->id
                         && $currentSubscription->status === 'canceled'
                         && $currentSubscription->ends_at?->isFuture(),
-                    
+
                     'current_subscription_ends_at' => $currentSubscription?->plan_id === $plan->id
                         ? $currentSubscription->ends_at?->toDateString()
                         : null,

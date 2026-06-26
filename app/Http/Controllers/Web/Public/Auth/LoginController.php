@@ -17,42 +17,42 @@ class LoginController extends Controller
     {
         return Inertia::render('Auth/Login');
     }
-    
+
     public function store(LoginRequest $request): RedirectResponse
     {
         $credentials = $request->validated();
-        
+
         if (! Auth::attempt($credentials, true)) {
             return back()->withErrors([
                 'email' => 'The provided credentials are incorrect.',
             ])->onlyInput('email');
         }
-        
+
         $request->session()->regenerate();
-        
+
         if (! $request->user()?->isActive()) {
             Auth::logout();
-            
+
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            
+
             return back()->withErrors([
                 'email' => 'This account is inactive. Please contact an administrator.',
             ])->onlyInput('email');
         }
-        
+
         return redirect()->intended(
             RedirectUserByRole::path($request->user())
         );
     }
-    
+
     public function destroy(Request $request): RedirectResponse
     {
         Auth::logout();
-        
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('login');
     }
 }

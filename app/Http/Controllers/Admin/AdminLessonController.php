@@ -26,7 +26,7 @@ class AdminLessonController extends Controller
                 'is_published' => $lesson->is_published,
                 'created_at' => $lesson->created_at?->toISOString(),
             ]);
-        
+
         return Inertia::render('Admin/Lessons/Index', [
             'course' => [
                 'id' => $course->id,
@@ -35,7 +35,7 @@ class AdminLessonController extends Controller
             'lessons' => $lessons,
         ]);
     }
-    
+
     public function create(Course $course): Response
     {
         return Inertia::render('Admin/Lessons/Create', [
@@ -45,7 +45,7 @@ class AdminLessonController extends Controller
             ],
         ]);
     }
-    
+
     public function store(Request $request, Course $course): RedirectResponse
     {
         $validated = $request->validate([
@@ -54,7 +54,7 @@ class AdminLessonController extends Controller
             'sort_order' => ['required', 'integer', 'min:1'],
             'is_published' => ['required', 'boolean'],
         ]);
-        
+
         $course->lessons()->create([
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']),
@@ -62,16 +62,16 @@ class AdminLessonController extends Controller
             'sort_order' => $validated['sort_order'],
             'is_published' => $validated['is_published'],
         ]);
-        
+
         return redirect()
             ->route('admin.courses.lessons.index', $course)
             ->with('success', 'Lesson created successfully.');
     }
-    
+
     public function edit(Course $course, Lesson $lesson): Response
     {
         abort_if($lesson->course_id !== $course->id, 404);
-        
+
         return Inertia::render('Admin/Lessons/Edit', [
             'course' => [
                 'id' => $course->id,
@@ -86,18 +86,18 @@ class AdminLessonController extends Controller
             ],
         ]);
     }
-    
+
     public function update(Request $request, Course $course, Lesson $lesson): RedirectResponse
     {
         abort_if($lesson->course_id !== $course->id, 404);
-        
+
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'sort_order' => ['required', 'integer', 'min:1'],
             'is_published' => ['required', 'boolean'],
         ]);
-        
+
         $lesson->update([
             'title' => $validated['title'],
             'slug' => Str::slug($validated['title']),
@@ -105,18 +105,18 @@ class AdminLessonController extends Controller
             'sort_order' => $validated['sort_order'],
             'is_published' => $validated['is_published'],
         ]);
-        
+
         return redirect()
             ->route('admin.courses.lessons.index', $course)
             ->with('success', 'Lesson updated successfully.');
     }
-    
+
     public function destroy(Course $course, Lesson $lesson): RedirectResponse
     {
         abort_if($lesson->course_id !== $course->id, 404);
-        
+
         $lesson->delete();
-        
+
         return redirect()
             ->route('admin.courses.lessons.index', $course)
             ->with('success', 'Lesson deleted successfully.');

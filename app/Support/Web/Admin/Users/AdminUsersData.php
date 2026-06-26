@@ -37,7 +37,7 @@ class AdminUsersData
                     'updated_at' => $user->updated_at?->toDateTimeString(),
                 ];
             });
-        
+
         return [
             'title' => 'Users',
             'description' => 'Manage user accounts and roles.',

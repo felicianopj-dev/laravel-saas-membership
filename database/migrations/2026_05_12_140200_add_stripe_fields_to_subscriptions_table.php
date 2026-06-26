@@ -15,7 +15,7 @@ return new class extends Migration
             $table->timestamp('current_period_end')->nullable()->after('trial_ends_at');
         });
     }
-    
+
     public function down(): void
     {
         Schema::table('subscriptions', function (Blueprint $table) {

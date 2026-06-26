@@ -10,7 +10,7 @@ class CourseFactory extends Factory
     public function definition(): array
     {
         $title = fake()->sentence(3);
-        
+
         return [
             'title' => Str::headline($title),
             'slug' => Str::slug($title),
@@ -19,7 +19,7 @@ class CourseFactory extends Factory
             'is_published' => true,
         ];
     }
-    
+
     public function unpublished(): static
     {
         return $this->state([

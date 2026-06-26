@@ -11,7 +11,7 @@ class StorePlanRequest extends FormRequest
     {
         return $this->user()?->isAdmin() === true;
     }
-    
+
     public function rules(): array
     {
         return [

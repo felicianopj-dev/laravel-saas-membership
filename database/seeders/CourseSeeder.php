@@ -15,7 +15,7 @@ class CourseSeeder extends Seeder
         $freePlan = Plan::query()->where('slug', 'free')->first();
         $proPlan = Plan::query()->where('slug', 'starter')->first();
         $premiumPlan = Plan::query()->where('slug', 'pro')->first();
-        
+
         $courses = [
             [
                 'title' => 'Laravel Membership Basics',
@@ -68,7 +68,7 @@ class CourseSeeder extends Seeder
                 ],
             ],
         ];
-        
+
         foreach ($courses as $courseData) {
             $course = Course::query()->updateOrCreate(
                 ['slug' => Str::slug($courseData['title'])],
@@ -79,7 +79,7 @@ class CourseSeeder extends Seeder
                     'is_published' => true,
                 ],
             );
-            
+
             foreach ($courseData['lessons'] as $index => $lessonTitle) {
                 Lesson::query()->updateOrCreate(
                     [
@@ -94,7 +94,7 @@ class CourseSeeder extends Seeder
                     ],
                 );
             }
-            
+
             $planIds = collect($courseData['plans'])
                 ->map(fn (string $slug) => match ($slug) {
                     'free' => $freePlan?->id,
@@ -105,11 +105,11 @@ class CourseSeeder extends Seeder
                 ->filter()
                 ->values()
                 ->all();
-            
+
             $course->plans()->sync($planIds);
         }
     }
-    
+
     private function demoLessonContent(string $title): string
     {
         return <<<MARKDOWN
