@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\Billing\BillingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,21 +27,25 @@ class RegisterController extends Controller
 
     public function store(RegisterRequest $request): RedirectResponse
     {
-        $user = User::query()->create([
-            'name' => $request->string('name')->toString(),
-            'email' => $request->string('email')->toString(),
-            'password' => $request->string('password')->toString(),
-            'role' => 'member',
-            'status' => 'active',
-        ]);
-
         try {
-            $plan = Plan::where('slug', 'free')->firstOrFail();
+            $user = DB::transaction(function () use ($request): User {
+                $user = User::query()->create([
+                    'name' => $request->string('name')->toString(),
+                    'email' => $request->string('email')->toString(),
+                    'password' => $request->string('password')->toString(),
+                    'role' => 'member',
+                    'status' => 'active',
+                ]);
 
-            $this->billingService->createSubscriptionCheckout(
-                user: $user->fresh(),
-                plan: $plan,
-            );
+                $plan = Plan::where('slug', 'free')->firstOrFail();
+
+                $this->billingService->createSubscriptionCheckout(
+                    user: $user,
+                    plan: $plan,
+                );
+
+                return $user;
+            });
         } catch (ValidationException $exception) {
             return redirect()
                 ->back()
