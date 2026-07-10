@@ -39,4 +39,48 @@ class Subscription extends Model
     {
         return $this->belongsTo(Plan::class);
     }
+
+    /**
+     * The subscription is in a live billing state. Mirrors Cashier: a scheduled
+     * cancellation keeps `status` = active until the period actually ends, so
+     * "scheduled to cancel" is tracked by `ends_at`, not by overloading `status`.
+     */
+    public function active(): bool
+    {
+        return in_array($this->status, ['active', 'trialing'], true);
+    }
+
+    /**
+     * A cancellation is scheduled but the paid-through period has not lapsed yet,
+     * so the member still has access (Cashier's "grace period").
+     */
+    public function onGracePeriod(): bool
+    {
+        return $this->ends_at !== null && $this->ends_at->isFuture();
+    }
+
+    /**
+     * A cancellation has been scheduled or has already taken effect.
+     */
+    public function canceled(): bool
+    {
+        return $this->ends_at !== null;
+    }
+
+    /**
+     * The subscription is canceled and its access window has closed.
+     */
+    public function ended(): bool
+    {
+        return $this->canceled() && ! $this->onGracePeriod();
+    }
+
+    /**
+     * The member is entitled to content: live, or canceled but still within the
+     * paid-through grace period.
+     */
+    public function valid(): bool
+    {
+        return $this->active() || $this->onGracePeriod();
+    }
 }

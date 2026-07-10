@@ -117,21 +117,7 @@ class User extends Authenticatable
 
     public function hasAccess(): bool
     {
-        $subscription = $this->currentSubscription();
-
-        if (! $subscription) {
-            return false;
-        }
-
-        if (in_array($subscription->status, ['active', 'trialing'], true)) {
-            return true;
-        }
-
-        if ($subscription->status === 'canceled' && $subscription->ends_at?->isFuture()) {
-            return true;
-        }
-
-        return false;
+        return (bool) $this->currentSubscription()?->valid();
     }
 
     public function onPlan(string $slug): bool

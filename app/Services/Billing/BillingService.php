@@ -74,15 +74,12 @@ class BillingService
     {
         $subscription = $user->currentSubscription();
 
-        if (! $subscription || $subscription->status !== 'canceled') {
+        // Only a subscription with a scheduled cancellation still inside its
+        // paid-through window can be resumed. An already-ended one is not
+        // returned by currentSubscription(), so this also covers expiry.
+        if (! $subscription || ! $subscription->onGracePeriod()) {
             throw ValidationException::withMessages([
                 'subscription' => 'No canceled subscription found.',
-            ]);
-        }
-
-        if ($subscription->ends_at?->isPast()) {
-            throw ValidationException::withMessages([
-                'subscription' => 'This subscription has already expired. Please choose a new plan.',
             ]);
         }
 

@@ -118,7 +118,7 @@ class ProcessStripeWebhookEvent implements ShouldQueue
             [
                 'user_id' => $user->id,
                 'plan_id' => $plan->id,
-                'status' => $this->resolveSubscriptionStatus($stripeSubscription),
+                'status' => $stripeSubscription->status,
                 'stripe_status' => $stripeSubscription->status,
                 'stripe_price' => $stripePriceId,
                 'starts_at' => $this->timestampToDate($stripeSubscription->start_date ?? null),
@@ -182,15 +182,6 @@ class ProcessStripeWebhookEvent implements ShouldQueue
         }
 
         return null;
-    }
-
-    private function resolveSubscriptionStatus(object $stripeSubscription): string
-    {
-        if (($stripeSubscription->cancel_at_period_end ?? false) === true) {
-            return 'canceled';
-        }
-
-        return $stripeSubscription->status;
     }
 
     private function resolveSubscriptionEndsAt(object $stripeSubscription, ?string $currentPeriodEnd): ?string

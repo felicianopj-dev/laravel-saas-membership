@@ -134,8 +134,11 @@ class StripeBillingProvider implements BillingProviderInterface
         $periodEnd = $this->resolveCurrentPeriodEnd($stripeSubscription)
             ?? $this->timestampToDate($stripeSubscription->cancel_at ?? null);
 
+        // Stripe keeps the subscription `active` until the period ends; the
+        // scheduled cancellation is tracked by `ends_at` (grace period), not by
+        // overloading `status` with 'canceled'.
         $subscription->update([
-            'status' => 'canceled',
+            'status' => $stripeSubscription->status,
             'stripe_status' => $stripeSubscription->status,
             'ends_at' => $periodEnd,
             'current_period_end' => $periodEnd,

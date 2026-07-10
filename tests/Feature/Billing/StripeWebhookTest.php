@@ -141,6 +141,28 @@ it('marks a subscription canceled on the deleted event', function () {
     expect($subscription->fresh()->status)->toBe('canceled');
 });
 
+it('keeps the status active and opens a grace period when cancel_at_period_end is set', function () {
+    $user = User::factory()->create();
+    $plan = Plan::factory()->create(['stripe_price_id' => 'price_abc']);
+
+    signedWebhook(subscriptionEvent(
+        'evt_grace',
+        $user,
+        $plan,
+        status: 'active',
+        overrides: ['cancel_at_period_end' => true],
+    ))->assertOk();
+
+    $subscription = Subscription::query()->where('stripe_id', 'sub_123')->first();
+
+    // Status is not overloaded with 'canceled': a scheduled cancellation is
+    // tracked by ends_at (grace period), and access is preserved until then.
+    expect($subscription->status)->toBe('active')
+        ->and($subscription->onGracePeriod())->toBeTrue()
+        ->and($subscription->ends_at->toDateString())->toBe(now()->addMonth()->toDateString())
+        ->and($user->fresh()->hasAccess())->toBeTrue();
+});
+
 it('falls back to the subscription item for current_period_end (Stripe 2025+ API)', function () {
     $user = User::factory()->create();
     $plan = Plan::factory()->create(['stripe_price_id' => 'price_abc']);
