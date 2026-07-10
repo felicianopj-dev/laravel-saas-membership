@@ -31,9 +31,9 @@ class MemberDashboardData
                     'ends_at' => $subscription->ends_at?->toDateString(),
                     'trial_ends_at' => $subscription->trial_ends_at?->toDateString(),
                     'has_access' => $user->hasAccess(),
-                    'is_active' => $subscription->status === 'active',
-                    'is_canceled' => $subscription->status === 'canceled',
-                    'is_expired' => $subscription->ends_at?->isPast() ?? false,
+                    'is_active' => $subscription->active() && ! $subscription->onGracePeriod(),
+                    'is_canceled' => $subscription->onGracePeriod(),
+                    'is_expired' => $subscription->ended(),
                 ]
                 : null,
         ];
