@@ -30,14 +30,18 @@ class SubscriptionSeeder extends Seeder
                     'plan_id' => $proPlan->id,
                     'status' => 'active',
                     'starts_at' => Carbon::now()->subDays(10),
-                    'ends_at' => Carbon::now()->addDays(20),
+                    // Active subscriptions have no scheduled cancellation, so
+                    // ends_at stays null; a future ends_at now means "on grace
+                    // period" (see Subscription::onGracePeriod()).
+                    'ends_at' => null,
                     'trial_ends_at' => null,
                 ],
                 1 => [
                     'plan_id' => $starterPlan->id,
                     'status' => 'trialing',
                     'starts_at' => Carbon::now()->subDays(3),
-                    'ends_at' => Carbon::now()->addDays(27),
+                    // On trial: signalled by trial_ends_at, not ends_at.
+                    'ends_at' => null,
                     'trial_ends_at' => Carbon::now()->addDays(4),
                 ],
                 2 => [
