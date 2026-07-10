@@ -186,6 +186,23 @@ php artisan serve
 npm run dev
 ```
 
+### Process queued jobs
+
+Stripe webhooks are handled by a queued job (`ProcessStripeWebhookEvent`,
+`QUEUE_CONNECTION=database`), so a worker must be running for subscriptions to sync.
+Without it the webhook endpoint still returns `200` (the event is stored and the job
+is dispatched), but the member's plan never updates until the queue is drained.
+
+Run a worker alongside the dev servers:
+
+```bash
+php artisan queue:work
+```
+
+For a full local Stripe test you therefore have three long-running processes:
+`php artisan serve`, `stripe listen --forward-to http://localhost:8000/api/webhooks/stripe`,
+and `php artisan queue:work`.
+
 ---
 
 ## Running Tests
