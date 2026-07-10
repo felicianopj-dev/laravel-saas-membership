@@ -24,9 +24,15 @@ class StripeBillingProvider implements BillingProviderInterface
 
         Stripe::setApiKey(config('services.stripe.secret'));
 
+        // Reuse (or create) the Cashier-managed Stripe customer so repeat
+        // checkouts bind to the same customer instead of Stripe spawning a new
+        // one from customer_email each time. Also persists stripe_id on the
+        // user up front rather than waiting for the webhook to backfill it.
+        $customer = $user->createOrGetStripeCustomer();
+
         $session = Session::create([
             'mode' => 'subscription',
-            'customer_email' => $user->email,
+            'customer' => $customer->id,
             'client_reference_id' => (string) $user->id,
             'line_items' => [
                 [
