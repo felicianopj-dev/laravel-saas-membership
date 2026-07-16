@@ -10,6 +10,7 @@ use App\Http\Controllers\Web\Member\PlanController;
 use App\Http\Controllers\Web\Member\PlanSubscriptionController;
 use App\Http\Controllers\Web\Member\ProfileController;
 use App\Http\Controllers\Web\Member\ProfilePasswordController;
+use App\Http\Controllers\Web\Public\Auth\EmailVerificationController;
 use App\Http\Controllers\Web\Public\Auth\LoginController;
 use App\Http\Controllers\Web\Public\Auth\RegisterController;
 use App\Http\Controllers\Web\Public\HomeController;
@@ -28,8 +29,19 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 
+    Route::get('/email/verify', [EmailVerificationController::class, 'notice'])
+        ->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware(['signed', 'throttle:6,1'])
+        ->name('verification.verify');
+
+    Route::post('/email/verification-notification', [EmailVerificationController::class, 'resend'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+
     Route::prefix('member')
-        ->middleware('member')
+        ->middleware(['member', 'verified'])
         ->name('member.')
         ->group(function () {
             Route::get('/', DashboardController::class)->name('dashboard');
