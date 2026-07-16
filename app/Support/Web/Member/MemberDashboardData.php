@@ -32,6 +32,9 @@ class MemberDashboardData
                     'trial_ends_at' => $subscription->trial_ends_at?->toDateString(),
                     'has_access' => $user->hasAccess(),
                     'is_active' => $subscription->active() && ! $subscription->onGracePeriod(),
+                    'can_cancel' => $subscription->active()
+                        && ! $subscription->onGracePeriod()
+                        && ($subscription->plan?->price ?? 0) > 0,
                     'is_canceled' => $subscription->onGracePeriod(),
                     'is_expired' => $subscription->ended(),
                 ]

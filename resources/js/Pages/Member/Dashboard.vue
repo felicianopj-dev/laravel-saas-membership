@@ -131,7 +131,7 @@ const resumeSubscription = () => {
 
           <div class="mt-6 flex flex-wrap gap-3 border-t border-slate-200 pt-6">
             <button
-                v-if="subscription.is_active"
+                v-if="subscription.can_cancel"
                 type="button"
                 class="inline-flex items-center rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700"
                 @click="cancelSubscription"
