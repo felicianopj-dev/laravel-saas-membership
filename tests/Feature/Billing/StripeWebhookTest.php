@@ -1,8 +1,11 @@
 <?php
 
+use App\Jobs\ProcessStripeWebhookEvent;
 use App\Models\Plan;
+use App\Models\StripeWebhookEvent;
 use App\Models\Subscription;
 use App\Models\User;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Testing\TestResponse;
 
 const WEBHOOK_SECRET = 'whsec_test_secret';
@@ -116,6 +119,48 @@ it('does not re-process a duplicate event id', function () {
         'status' => 'active',
     ]);
     expect(Subscription::where('stripe_id', 'sub_123')->count())->toBe(1);
+});
+
+it('re-dispatches an event that was recorded but never processed', function () {
+    $user = User::factory()->create();
+    $plan = Plan::factory()->create(['stripe_price_id' => 'price_abc']);
+
+    // A previous delivery recorded the event, then its job died on the queue and
+    // exhausted its retries: the row exists but processed_at was never written.
+    StripeWebhookEvent::query()->create([
+        'stripe_event_id' => 'evt_stuck',
+        'type' => 'customer.subscription.deleted',
+    ]);
+
+    Queue::fake();
+
+    signedWebhook(subscriptionEvent(
+        'evt_stuck',
+        $user,
+        $plan,
+        status: 'canceled',
+        type: 'customer.subscription.deleted',
+    ))->assertOk();
+
+    // Stripe's redelivery must get another chance to process, not a silent drop.
+    Queue::assertPushed(ProcessStripeWebhookEvent::class);
+});
+
+it('does not re-dispatch an event that already finished processing', function () {
+    $user = User::factory()->create();
+    $plan = Plan::factory()->create(['stripe_price_id' => 'price_abc']);
+
+    StripeWebhookEvent::query()->create([
+        'stripe_event_id' => 'evt_done',
+        'type' => 'customer.subscription.updated',
+        'processed_at' => now(),
+    ]);
+
+    Queue::fake();
+
+    signedWebhook(subscriptionEvent('evt_done', $user, $plan, status: 'active'))->assertOk();
+
+    Queue::assertNotPushed(ProcessStripeWebhookEvent::class);
 });
 
 it('marks a subscription canceled on the deleted event', function () {
