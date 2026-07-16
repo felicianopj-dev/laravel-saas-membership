@@ -34,15 +34,18 @@ class StripeWebhookController extends Controller
         }
 
         // Idempotency: Stripe may deliver the same event more than once and out
-        // of order. Record the event id first; a duplicate is acknowledged but
-        // never re-processed.
+        // of order. The gate is "did this event finish processing", not "have we
+        // seen it": a row whose job died on the queue still has a null
+        // processed_at, and Stripe's redelivery must get another attempt rather
+        // than a 200 that drops the event for good. Concurrent deliveries are
+        // handled by the job's ShouldBeUnique lock.
         $record = StripeWebhookEvent::query()->firstOrCreate(
             ['stripe_event_id' => $event->id],
             ['type' => $event->type],
         );
 
-        if (! $record->wasRecentlyCreated) {
-            Log::info('Stripe webhook ignored (duplicate).', ['event_id' => $event->id]);
+        if ($record->processed_at !== null) {
+            Log::info('Stripe webhook ignored (already processed).', ['event_id' => $event->id]);
 
             return response('Webhook already handled.', 200);
         }
