@@ -30,6 +30,15 @@ class ProcessStripeWebhookEvent implements ShouldQueue
     {
         $event = Event::constructFrom(json_decode($this->payload, true));
 
+        // Correlate every log line emitted while processing this event (including
+        // the synchronizer's) back to the originating Stripe event.
+        Log::withContext([
+            'stripe_event_id' => $event->id,
+            'stripe_event_type' => $event->type,
+        ]);
+
+        Log::info('Processing Stripe webhook event.');
+
         match ($event->type) {
             'checkout.session.completed' => $sync->syncFromCheckoutSession($event->data->object),
             'customer.subscription.created',

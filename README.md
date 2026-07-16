@@ -64,10 +64,13 @@ SaaS course membership platform with subscription billing, gated content access,
 ## Technical Highlights
 
 - Stripe subscription billing flow
-- Stripe webhook synchronization
+- Idempotent Stripe webhook synchronization
 - Billing provider abstraction layer
 - Role-based admin/member architecture
 - Subscription lifecycle management
+- Email verification flow
+- Structured, correlated logging across billing flows
+- CI pipeline (Pint, tests, dependency audit)
 - Feature test coverage
 
 ---
@@ -217,8 +220,7 @@ php artisan test
 
 - Team support
 - Usage-based billing
-- Email notifications
-- CI/CD pipeline
+- Transactional email notifications (receipts, dunning)
 - Multi-tenant architecture
 - Invoice generation
 - Production deployment infrastructure

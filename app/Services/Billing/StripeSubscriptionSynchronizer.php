@@ -134,6 +134,13 @@ class StripeSubscriptionSynchronizer
                 'current_period_end' => $currentPeriodEnd,
             ],
         );
+
+        Log::info('Subscription synced.', [
+            'stripe_id' => $stripeSubscription->id,
+            'user_id' => $user->id,
+            'plan_id' => $plan->id,
+            'status' => $stripeSubscription->status,
+        ]);
     }
 
     public function markDeleted(object $stripeSubscription): void
@@ -151,6 +158,12 @@ class StripeSubscriptionSynchronizer
             'stripe_status' => $stripeSubscription->status,
             'ends_at' => $this->timestampToDate($stripeSubscription->ended_at ?? time()),
             'current_period_end' => $this->timestampToDate($stripeSubscription->current_period_end ?? null),
+        ]);
+
+        Log::info('Subscription marked deleted.', [
+            'stripe_id' => $stripeSubscription->id,
+            'user_id' => $subscription->user_id,
+            'plan_id' => $subscription->plan_id,
         ]);
     }
 
