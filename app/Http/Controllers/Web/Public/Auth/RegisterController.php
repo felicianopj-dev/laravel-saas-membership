@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\Plan;
 use App\Models\User;
 use App\Services\Billing\BillingService;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -52,10 +53,16 @@ class RegisterController extends Controller
                 ->with('error', $exception->validator->errors()->first());
         }
 
+        // Fires the framework's SendEmailVerificationNotification listener, so a
+        // freshly registered member receives the signed verification link.
+        event(new Registered($user));
+
         Auth::login($user);
 
         $request->session()->regenerate();
 
-        return redirect()->route('member.dashboard');
+        // Member routes require a verified email; send the user straight to the
+        // verification notice instead of bouncing them off the dashboard.
+        return redirect()->route('verification.notice');
     }
 }

@@ -2,8 +2,12 @@
 
 use App\Models\Plan;
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Notification;
 
-it('registers a member and subscribes them to the free plan', function () {
+it('registers a member, subscribes them to the free plan, and sends a verification email', function () {
+    Notification::fake();
+
     $plan = Plan::factory()->create([
         'slug' => 'free',
         'price' => 0,
@@ -17,11 +21,16 @@ it('registers a member and subscribes them to the free plan', function () {
         'password_confirmation' => 'password-123',
     ]);
 
-    $response->assertRedirect(route('member.dashboard'));
+    // A newly registered member is unverified, so they land on the verification
+    // notice rather than the (verified-gated) dashboard.
+    $response->assertRedirect(route('verification.notice'));
 
     $user = User::where('email', 'ada@example.com')->firstOrFail();
 
     $this->assertAuthenticatedAs($user);
+    expect($user->hasVerifiedEmail())->toBeFalse();
+
+    Notification::assertSentTo($user, VerifyEmail::class);
 
     $this->assertDatabaseHas('subscriptions', [
         'user_id' => $user->id,
