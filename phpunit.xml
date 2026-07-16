@@ -21,6 +21,10 @@
         <env name="APP_ENV" value="testing"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
+        <!-- Pinned: without it the suite inherits the developer's own .env, so a
+             local BILLING_DRIVER=stripe would bind the network-bound provider
+             and diverge from CI, which builds its .env from .env.example. -->
+        <env name="BILLING_DRIVER" value="mock"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
         <env name="CACHE_STORE" value="array"/>
         <env name="DB_CONNECTION" value="sqlite"/>

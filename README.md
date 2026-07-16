@@ -147,34 +147,40 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Create a `.env` file:
+This ships with `BILLING_DRIVER=mock`, which runs the entire demo — plans,
+checkout, subscriptions — without a Stripe account. If that is all you need, skip
+ahead to the migrations step.
+
+### Stripe Setup (optional)
+
+To exercise the real Stripe integration instead of the mock, fill in these values
+in your `.env` and switch the driver:
 
 ```env
+BILLING_DRIVER=stripe
+
+STRIPE_KEY=pk_test_xxxxx
 STRIPE_SECRET=sk_test_xxxxx
 STRIPE_WEBHOOK_SECRET=whsec_xxxxx
 STRIPE_CURRENCY=usd
-STRIPE_PRICE_FREE_MONTHLY=
+
 STRIPE_PRICE_STARTER_MONTHLY=price_xxxxx
 STRIPE_PRICE_PRO_MONTHLY=price_xxxxx
 STRIPE_PRODUCT_STARTER_MONTHLY=prod_xxxxx
 STRIPE_PRODUCT_PRO_MONTHLY=prod_xxxxx
-BILLING_DRIVER=stripe
-BILLING_CURRENCY=usd
 ```
 
-### Stripe Webhook Setup
+The price and product ids come from your Stripe dashboard and are read by
+`PlanSeeder`. The free plan has no Stripe counterpart, so it needs no ids.
 
-Install the Stripe CLI and start webhook forwarding:
+Then install the Stripe CLI and start webhook forwarding:
 
 ```bash
 stripe listen --forward-to http://localhost:8000/api/webhooks/stripe
 ```
 
-Copy the generated webhook secret into your `.env` file:
-
-```env
-STRIPE_WEBHOOK_SECRET=whsec_xxxxx
-```
+`stripe listen` prints a webhook signing secret on startup — copy that value into
+`STRIPE_WEBHOOK_SECRET`, or every webhook will fail signature verification.
 
 ### Run migrations and seeders
 
